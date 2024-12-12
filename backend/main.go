@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"portfolio/lobby/constants"
 	"portfolio/lobby/types"
 	"strconv"
 
@@ -35,9 +38,15 @@ func getDataById(context *gin.Context) {
 }
 
 func main() {
+	currentEnvironment := os.Getenv(constants.ENV)
+
+	fmt.Printf("Current environment is %s", currentEnvironment)
+
 	router := gin.Default()
 	router.GET("/people", getData)
 	router.GET("/people/:id", getDataById)
 
-	router.Run("localhost:8080")
+	fmt.Println("The env var is", os.Getenv("TEST"))
+
+	router.Run("0.0.0.0:8080")
 }

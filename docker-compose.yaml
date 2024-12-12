@@ -1,0 +1,12 @@
+name: Portfolio lobby
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - 3000:8080
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /app

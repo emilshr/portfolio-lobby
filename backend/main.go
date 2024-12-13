@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"portfolio/lobby/constants"
 	"portfolio/lobby/types"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 var persons = []types.Person{

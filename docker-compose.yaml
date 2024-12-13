@@ -2,11 +2,33 @@ name: Portfolio lobby
 
 services:
   backend:
+    container_name: Backend
+    env_file:
+      - .env
     build:
       context: ./backend
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - 3000:8080
     volumes:
       - type: bind
         source: ./backend
         target: /app
+
+  database:
+    container_name: DB
+    image: mysql:9.1
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 5
+      interval: 5s

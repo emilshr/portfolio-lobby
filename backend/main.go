@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"portfolio/lobby/constants"
+	"portfolio/lobby/db"
 	"portfolio/lobby/types"
 	"strconv"
 )
@@ -37,6 +38,8 @@ func getDataById(context *gin.Context) {
 }
 
 func main() {
+	db.InitializeAndTestDatabaseConnection()
+
 	currentEnvironment := os.Getenv(constants.ENV)
 
 	fmt.Printf("Current environment is %s", currentEnvironment)

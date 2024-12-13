@@ -2,3 +2,8 @@ package constants
 
 const ENV = "ENV"
 const TEST = "TEST"
+const MYSQL_USER = "MYSQL_USER"
+const MYSQL_DATABASE = "MYSQL_DATABASE"
+const MYSQL_PASSWORD = "MYSQL_PASSWORD"
+const MYSQL_HOST = "MYSQL_HOST"
+const MYSQL_PORT = "MYSQL_PORT"

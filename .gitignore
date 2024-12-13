@@ -4,6 +4,9 @@ vendor/
 # Temp build files
 tmp/
 
+# vscode stuff
+.vscode/
+
 *.o
 *.a
 *.so

@@ -18,13 +18,14 @@ func GetDatabaseConfig() string {
 	password := os.Getenv(constants.MYSQL_PASSWORD)
 	host := os.Getenv(constants.MYSQL_HOST)
 	port := os.Getenv(constants.MYSQL_PORT)
+	address := strings.Join([]string{host, port}, ":")
 
 	config := mysql.Config{
 		User:   user,
 		DBName: database,
 		Passwd: password,
 		Net:    "tcp",
-		Addr:   strings.Join([]string{host, port}, ":"),
+		Addr:   address,
 	}
 
 	fmt.Println(config.FormatDSN(), database, user, password, host, port)
@@ -52,4 +53,40 @@ func InitializeAndTestDatabaseConnection() {
 	}
 
 	fmt.Println("Connection validated successfully")
+}
+
+func CreateSchemas() {
+	var schemaCreationScript string
+
+	query, err := os.ReadFile("./sql/init.sql")
+
+	if err != nil {
+		log.Fatal("Failed to read file", err.Error())
+	}
+
+	schemaCreationScript = string(query)
+
+	trx, err := Db.Begin()
+
+	if err != nil {
+		log.Fatal("Failed to create schemas", err.Error())
+	}
+
+	commands := strings.Split(schemaCreationScript, ";")
+
+	for _, command := range commands {
+		parsedCommand := strings.TrimSpace(command)
+
+		if parsedCommand != "" {
+			_, err := trx.Exec(parsedCommand)
+
+			if err != nil {
+				log.Fatal("Error while executing script", err.Error())
+			}
+		}
+	}
+
+	trx.Commit()
+
+	fmt.Println("Completed creating schemas")
 }

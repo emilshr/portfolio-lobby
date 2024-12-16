@@ -1,17 +1,17 @@
 package types
 
 type User struct {
-	id                 int8
-	username           string
-	email              string
-	hashed_password    string `json:"hashedPassword"`
-	confirmation_token string `json:"confirmationToken"`
-	created_at         string `json:"createdAt"`
+	Id                int8   `json:"id"`
+	Username          string `json:"username"`
+	Email             string `json:"email"`
+	HashedPassword    string `json:"hashed_password"`
+	ConfirmationToken string `json:"confirmation_token"`
+	CreatedAt         string `json:"created_at"`
 }
 
 type PasswordReset struct {
-	id         int8
-	user_id    int8 `json:"userId"`
-	token      string
-	created_at string `json:"createdAt"`
+	Id        int8   `json:"id"`
+	UserId    int8   `json:"user_id"`
+	Token     string `json:"token"`
+	CreatedAt string `json:"created_at"`
 }

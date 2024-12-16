@@ -18,6 +18,13 @@ CREATE TABLE
     );
 
 CREATE TABLE
+    IF NOT EXISTS token (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(255) NOT NULL,
+        expiry DATETIME NOT NULL
+    );
+
+CREATE TABLE
     IF NOT EXISTS confirmation_token (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
         token VARCHAR(255) NOT NULL

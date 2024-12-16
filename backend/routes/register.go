@@ -41,7 +41,6 @@ func Register(context *gin.Context) {
 	if len(users) != 0 {
 		fmt.Printf("User with email: %s or username: %s already exists\n", email, username)
 
-		context.Status(http.StatusConflict)
 		context.JSON(http.StatusConflict, gin.H{"message": "Email/username already exists"})
 		return
 	}

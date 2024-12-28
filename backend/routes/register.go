@@ -2,13 +2,16 @@ package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
+	"portfolio/lobby/constants"
 	"portfolio/lobby/db"
+	service "portfolio/lobby/services"
 	"portfolio/lobby/types"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(context *gin.Context) {
@@ -45,19 +48,42 @@ func Register(context *gin.Context) {
 		return
 	}
 
-	result.Close()
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
 		log.Fatal("Error while hashing password", err.Error())
 	}
 
-	_, err = db.Db.Exec(`INSERT INTO user(username, email, hashed_password, created_at) values(?,?,?,?)`, username, email, hashedPassword, time.Now())
+	createdUserResult, err := db.Db.Exec(`INSERT INTO user(username, email, hashed_password, created_at) values(?,?,?,?)`, username, email, hashedPassword, time.Now())
 
 	if err != nil {
 		log.Fatal("Error while registering a user", err.Error())
 	}
+
+	createdUserId, err := createdUserResult.LastInsertId()
+
+	if err != nil {
+		log.Fatal("Error while fetching the ID of the last inserted user")
+	}
+
+	generatedConfirmationToken := service.CreateConfirmationToken(createdUserId)
+
+	_, err = db.Db.Exec(`INSERT INTO confirmation_token(token, user_id) values(?,?)`, generatedConfirmationToken, createdUserId)
+
+	if err != nil {
+		log.Fatal("Error while inserting confirmation token for user ", createdUserId)
+	}
+
+	confirmationUrl := constants.FRONTEND_HOST + "/" + generatedConfirmationToken
+
+	emailPayload := service.SendEmailPayload{
+		To:      []string{"delivered@resend.dev"},
+		Subject: "This is a test email",
+		Html:    "<h1>Sample content</h1><br /><a href=\"" + confirmationUrl + "\">Confirmation link</a>",
+		Text:    "To verify your account. Click on the following link or copy paste it in your browser",
+	}
+
+	service.SendEmail(emailPayload)
 
 	context.Status(http.StatusCreated)
 }

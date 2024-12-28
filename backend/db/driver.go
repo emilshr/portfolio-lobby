@@ -13,22 +13,15 @@ import (
 var Db *sql.DB
 
 func GetDatabaseConfig() string {
-	database := os.Getenv(constants.MYSQL_DATABASE)
-	user := os.Getenv(constants.MYSQL_USER)
-	password := os.Getenv(constants.MYSQL_PASSWORD)
-	host := os.Getenv(constants.MYSQL_HOST)
-	port := os.Getenv(constants.MYSQL_PORT)
-	address := strings.Join([]string{host, port}, ":")
+	address := strings.Join([]string{constants.MYSQL_HOST, constants.MYSQL_PORT}, ":")
 
 	config := mysql.Config{
-		User:   user,
-		DBName: database,
-		Passwd: password,
+		User:   constants.MYSQL_USER,
+		DBName: constants.MYSQL_DATABASE,
+		Passwd: constants.MYSQL_PASSWORD,
 		Net:    "tcp",
 		Addr:   address,
 	}
-
-	fmt.Println(config.FormatDSN(), database, user, password, host, port)
 
 	return config.FormatDSN()
 }

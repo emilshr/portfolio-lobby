@@ -7,8 +7,6 @@ import (
 )
 
 func Login(context *gin.Context) {
-	context.Status(http.StatusInternalServerError)
-
 	email := context.Request.FormValue("email")
 	password := context.Request.FormValue("password")
 

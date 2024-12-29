@@ -35,3 +35,10 @@ CREATE TABLE
         verified_on DATETIME,
         FOREIGN KEY (`user_id`) REFERENCES user (`id`)
     );
+
+CREATE TABLE refresh_token (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES user (`id`)
+)

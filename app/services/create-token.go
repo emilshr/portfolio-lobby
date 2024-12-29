@@ -26,7 +26,7 @@ func CreateConfirmationToken(userId int64) string {
 	return signedToken
 }
 
-func CreateLoginToken(userId string, username string) string {
+func CreateLoginToken(userId int8, username string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, LoginTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{},
 		UserId:           userId,
@@ -65,6 +65,29 @@ func CreatePasswordResetToken(email string) (*string, error) {
 	}
 
 	_, err = db.Db.Exec(`INSERT INTO password_reset(user_id, token) VALUES(?,?)`, fetchedUser.Id, signedToken)
+
+	if err != nil {
+		return nil, fmt.Errorf("error while inserting new record to password reset %s", err.Error())
+	}
+
+	return &signedToken, nil
+}
+
+func CreateRefreshToken(userId int8) (*string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, RefreshTokenClaims{
+		RegisteredClaims: jwt.RegisteredClaims{},
+		userId:           userId,
+		IssuedAt:         time.Now().Unix(),
+		Expiry:           time.Now().Add(time.Minute * 10).Unix(),
+	})
+
+	signedToken, err := token.SignedString(constants.REFRESH_JWT_SECRET)
+
+	if err != nil {
+		log.Fatal("Error while signing token ", err.Error())
+	}
+
+	_, err = db.Db.Exec(`INSERT INTO refresh_token(user_id, token) VALUES(?,?)`, userId, signedToken)
 
 	if err != nil {
 		return nil, fmt.Errorf("error while inserting new record to password reset %s", err.Error())

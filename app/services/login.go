@@ -8,34 +8,37 @@ import (
 )
 
 type Response struct {
-	Message string
-	Status  bool
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	Message      string `json:"message"`
+	Status       bool   `json:"status"`
 }
 
 func Login(email string, password string) Response {
 	fmt.Printf("Login request from email: %s\n", email)
 
-	results, err := db.Db.Query(`SELECT hashed_password from user WHERE email=?`, email)
+	var hashedPassword string
+	var userId int8
+	var username string
+
+	err := db.Db.QueryRow(`SELECT hashed_password, id, username from user WHERE email=?`, email).Scan(&hashedPassword, &userId, &username)
 
 	if err != nil {
 		log.Fatal("Error while querying for users", err.Error())
 	}
 
-	var hashedPassword string
-
-	for results.Next() {
-		err = results.Scan(&hashedPassword)
-		if err != nil {
-			log.Fatal("Error while querying for users", err.Error())
-		}
-	}
-	results.Close()
-
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 
 	if err != nil {
-		return Response{Message: "Invalid credentials", Status: false}
+		return Response{Message: "Invalid credentials", Status: false, AccessToken: ""}
 	}
 
-	return Response{Message: "Ok", Status: true}
+	token := CreateLoginToken(userId, username)
+	refreshToken, err := CreateRefreshToken(userId)
+
+	if err != nil {
+		return Response{Message: "Internal server error", AccessToken: "", RefreshToken: "", Status: false}
+	}
+
+	return Response{Message: "Ok", Status: true, AccessToken: token, RefreshToken: *refreshToken}
 }

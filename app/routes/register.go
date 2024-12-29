@@ -74,7 +74,7 @@ func Register(context *gin.Context) {
 		log.Fatal("Error while inserting confirmation token for user ", createdUserId)
 	}
 
-	confirmationUrl := constants.FRONTEND_HOST + "/" + generatedConfirmationToken
+	confirmationUrl := constants.BACKEND_HOST + "/" + generatedConfirmationToken
 
 	emailPayload := service.SendEmailPayload{
 		To:      []string{"delivered@resend.dev"},

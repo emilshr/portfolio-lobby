@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"portfolio/lobby/constants"
 	"portfolio/lobby/db"
 	"portfolio/lobby/middlewares"
 	"portfolio/lobby/routes"
 	"portfolio/lobby/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -21,6 +23,11 @@ func main() {
 	router.GET("/confirm/:token", routes.ConfirmAccount)
 	router.POST("/get-reset-password", routes.GetResetPasswordLink)
 	router.POST("/reset-password/:token", routes.ResetPassword)
+	router.GET("/test", func(context *gin.Context) {
+		val, _ := context.Cookie(constants.REFRESH_TOKEN_COOKIE)
+		println("value is ", val, context.Request.Host, context.Request.Header)
+		context.Status(200)
+	})
 
 	router.Run("0.0.0.0:8080")
 }

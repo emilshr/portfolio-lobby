@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"portfolio/lobby/constants"
 	"portfolio/lobby/services"
 )
 
@@ -19,5 +20,6 @@ func Login(context *gin.Context) {
 	} else {
 		httpStatus = http.StatusUnauthorized
 	}
+	context.SetCookie(constants.REFRESH_TOKEN_COOKIE, result.RefreshToken, 86400, "/", constants.BACKEND_HOST_DOMAIN, true, true)
 	context.JSON(httpStatus, result)
 }

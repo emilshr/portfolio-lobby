@@ -15,7 +15,7 @@ type ConfirmationTokenClaims struct {
 
 type LoginTokenClaims struct {
 	jwt.RegisteredClaims
-	UserId   string
+	UserId   int8
 	Username string
 	Expiry   int64
 	IssuedAt int64
@@ -24,6 +24,13 @@ type LoginTokenClaims struct {
 type PasswordResetClaims struct {
 	jwt.RegisteredClaims
 	Email    string
+	IssuedAt int64
+	Expiry   int64
+}
+
+type RefreshTokenClaims struct {
+	jwt.RegisteredClaims
+	userId   int8
 	IssuedAt int64
 	Expiry   int64
 }
@@ -79,4 +86,22 @@ func DecodePasswordResetToken(token string) (*PasswordResetClaims, error) {
 	}
 
 	return &passwordResetTokenClaims, nil
+}
+
+func DecodeRefreshToken(token string) (*RefreshTokenClaims, error) {
+	var refreshTokenClaims RefreshTokenClaims
+
+	verifiedToken, err := jwt.ParseWithClaims(token, &refreshTokenClaims, func(token *jwt.Token) (interface{}, error) {
+		return constants.REFRESH_JWT_SECRET, nil
+	})
+
+	if err != nil {
+		fmt.Printf("Error while decoding password reset token %s\n", err.Error())
+		return nil, fmt.Errorf("error while decoding password reset token %s", err.Error())
+	}
+	if !verifiedToken.Valid {
+		return nil, fmt.Errorf("reset password token is invalid")
+	}
+
+	return &refreshTokenClaims, nil
 }

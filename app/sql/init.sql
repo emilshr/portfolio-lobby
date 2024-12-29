@@ -19,14 +19,6 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    IF NOT EXISTS token (
-        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        token VARCHAR(255) NOT NULL,
-        expiry DATETIME NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-CREATE TABLE
     IF NOT EXISTS confirmation_token (
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
         token VARCHAR(255) NOT NULL,
@@ -36,9 +28,17 @@ CREATE TABLE
         FOREIGN KEY (`user_id`) REFERENCES user (`id`)
     );
 
-CREATE TABLE refresh_token (
+CREATE TABLE IF NOT EXISTS refresh_token (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     token VARCHAR(255) NOT NULL,
     user_id INT NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES user (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS chat (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    message VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES user (`id`)
 );

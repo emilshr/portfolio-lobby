@@ -84,7 +84,7 @@ func CreateRefreshToken(userId int8) (*string, error) {
 	signedToken, err := token.SignedString(constants.REFRESH_JWT_SECRET)
 
 	if err != nil {
-		log.Fatal("Error while signing token ", err.Error())
+		return nil, fmt.Errorf("error while signing token %s", err.Error())
 	}
 
 	_, err = db.Db.Exec(`INSERT INTO refresh_token(user_id, token) VALUES(?,?)`, userId, signedToken)

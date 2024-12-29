@@ -1,44 +1,49 @@
 package service
 
 import (
+	"errors"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
-	"log"
 	"portfolio/lobby/db"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Response struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
-	Message      string `json:"message"`
-	Status       bool   `json:"status"`
 }
 
-func Login(email string, password string) Response {
+func Login(email string, password string) (*Response, error) {
 	fmt.Printf("Login request from email: %s\n", email)
 
 	var hashedPassword string
 	var userId int8
 	var username string
+	var isVerified bool
 
-	err := db.Db.QueryRow(`SELECT hashed_password, id, username from user WHERE email=?`, email).Scan(&hashedPassword, &userId, &username)
+	err := db.Db.QueryRow(`SELECT hashed_password, id, username, is_verified from user WHERE email=?`, email).Scan(&hashedPassword, &userId, &username, &isVerified)
+
+	if !isVerified {
+		return nil, errors.New("account is not verified")
+	}
 
 	if err != nil {
-		log.Fatal("Error while querying for users", err.Error())
+		fmt.Println("Error while querying for users ", err.Error())
+		return nil, errors.New("user does not exist")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 
 	if err != nil {
-		return Response{Message: "Invalid credentials", Status: false, AccessToken: ""}
+		return nil, errors.New("invalid password")
 	}
 
 	token := CreateLoginToken(userId, username)
 	refreshToken, err := CreateRefreshToken(userId)
 
 	if err != nil {
-		return Response{Message: "Internal server error", AccessToken: "", RefreshToken: "", Status: false}
+		return nil, errors.New("unknown error")
 	}
 
-	return Response{Message: "Ok", Status: true, AccessToken: token, RefreshToken: *refreshToken}
+	return &Response{AccessToken: token, RefreshToken: *refreshToken}, nil
 }

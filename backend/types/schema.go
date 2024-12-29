@@ -30,3 +30,17 @@ type ConfirmationToken struct {
 	IssuedOn   string `json:"issuedOn"`
 	VerifiedOn string `json:"verifiedOn"`
 }
+
+type RefreshToken struct {
+	Id        string `json:"id"`
+	Token     string `json:"token"`
+	UserId    string `json:"userId"`
+	CreatedAt string `json:"createdAt"`
+}
+
+type Chat struct {
+	Id        string `json:"id"`
+	Message   string `json:"message"`
+	UserId    string `json:"userId"`
+	CreatedAt string `json:"createdAt"`
+}

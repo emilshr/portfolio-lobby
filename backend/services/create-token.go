@@ -32,7 +32,7 @@ func CreateLoginToken(userId int8, username string) string {
 		UserId:           userId,
 		Username:         username,
 		IssuedAt:         time.Now().Unix(),
-		Expiry:           time.Now().Add(time.Hour * 24).Unix(),
+		Expiry:           time.Now().Add(time.Minute * 30).Unix(),
 	})
 
 	signedToken, err := token.SignedString(constants.CONFIRMATION_JWT_SECRET)
@@ -76,9 +76,9 @@ func CreatePasswordResetToken(email string) (*string, error) {
 func CreateRefreshToken(userId int8) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, RefreshTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{},
-		userId:           userId,
+		UserId:           userId,
 		IssuedAt:         time.Now().Unix(),
-		Expiry:           time.Now().Add(time.Minute * 10).Unix(),
+		Expiry:           time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	signedToken, err := token.SignedString(constants.REFRESH_JWT_SECRET)

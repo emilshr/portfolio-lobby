@@ -16,7 +16,7 @@ services:
       - MYSQL_HOST=database
     volumes:
       - type: bind
-        source: ./app
+        source: ./backend
         target: /app
 
   database:

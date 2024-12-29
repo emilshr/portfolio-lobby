@@ -25,5 +25,5 @@ jobs:
 
       - name: Build app
         run: |
-          cd app
+          cd backend
           go build main.go

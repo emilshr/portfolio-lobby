@@ -28,17 +28,20 @@ CREATE TABLE
         FOREIGN KEY (`user_id`) REFERENCES user (`id`)
     );
 
-CREATE TABLE IF NOT EXISTS refresh_token (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    token VARCHAR(255) NOT NULL,
-    user_id INT NOT NULL,
-    FOREIGN KEY (`user_id`) REFERENCES user (`id`)
-);
+CREATE TABLE
+    IF NOT EXISTS refresh_token (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        token VARCHAR(255) NOT NULL,
+        user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (`user_id`) REFERENCES user (`id`)
+    );
 
-CREATE TABLE IF NOT EXISTS chat (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    message VARCHAR(255) NOT NULL,
-    user_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (`user_id`) REFERENCES user (`id`)
-);
+CREATE TABLE
+    IF NOT EXISTS chat (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        message VARCHAR(255) NOT NULL,
+        user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (`user_id`) REFERENCES user (`id`)
+    );

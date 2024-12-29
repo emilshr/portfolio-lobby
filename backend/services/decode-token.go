@@ -30,7 +30,7 @@ type PasswordResetClaims struct {
 
 type RefreshTokenClaims struct {
 	jwt.RegisteredClaims
-	userId   int8
+	UserId   int8
 	IssuedAt int64
 	Expiry   int64
 }

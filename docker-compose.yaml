@@ -16,7 +16,7 @@ services:
       - MYSQL_HOST=database
     volumes:
       - type: bind
-        source: ./backend
+        source: ./app
         target: /app
 
   database:
@@ -34,10 +34,3 @@ services:
       timeout: 5s
       retries: 5
       interval: 5s
-
-  mail-server:
-    container_name: email
-    image: maildev/maildev
-    ports:
-      - 1080:1080
-      - 1025:1025

@@ -11,6 +11,7 @@ import (
 type Response struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
+	Username     string `json:"username"`
 }
 
 func Login(email string, password string) (*Response, error) {
@@ -23,13 +24,13 @@ func Login(email string, password string) (*Response, error) {
 
 	err := db.Db.QueryRow(`SELECT hashed_password, id, username, is_verified from user WHERE email=?`, email).Scan(&hashedPassword, &userId, &username, &isVerified)
 
-	if !isVerified {
-		return nil, errors.New("account is not verified")
-	}
-
 	if err != nil {
 		fmt.Println("Error while querying for users ", err.Error())
 		return nil, errors.New("user does not exist")
+	}
+
+	if !isVerified {
+		return nil, errors.New("account is not verified")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
@@ -38,12 +39,20 @@ func Login(email string, password string) (*Response, error) {
 		return nil, errors.New("invalid password")
 	}
 
-	token := CreateLoginToken(userId, username)
+	token, err := CreateLoginToken(userId, username)
+
+	if err != nil {
+		return nil, err
+	}
+
 	refreshToken, err := CreateRefreshToken(userId)
 
 	if err != nil {
-		return nil, errors.New("unknown error")
+		fmt.Println("Error while creating refresh token ", err.Error())
+		return nil, err
 	}
 
-	return &Response{AccessToken: token, RefreshToken: *refreshToken}, nil
+	response := Response{AccessToken: *token, RefreshToken: *refreshToken, Username: username}
+
+	return &response, nil
 }

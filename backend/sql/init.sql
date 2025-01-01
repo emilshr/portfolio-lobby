@@ -45,3 +45,5 @@ CREATE TABLE
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (`user_id`) REFERENCES user (`id`)
     );
+
+-- CREATE TABLE IF NOT EXISTS

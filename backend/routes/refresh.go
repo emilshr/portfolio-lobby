@@ -2,8 +2,8 @@ package routes
 
 import (
 	"database/sql"
-	"errors"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"portfolio/lobby/constants"
 	"portfolio/lobby/db"
 	service "portfolio/lobby/services"
@@ -11,21 +11,25 @@ import (
 	"time"
 )
 
-func Refresh(context *gin.Context) (*string, error) {
+func Refresh(context *gin.Context) {
 	refreshToken, err := context.Cookie(constants.REFRESH_TOKEN_COOKIE)
 
 	if err != nil {
-		return nil, errors.New("No cookie found")
+		context.Status(http.StatusUnauthorized)
+		return
 	}
 
-	tokenClaims, err := service.DecodeRefreshToken(refreshToken)
+	tokenClaims, _, err := service.DecodeRefreshToken(refreshToken)
 
 	if err != nil {
-		return nil, errors.New("error while decoding refresh token")
+		context.JSON(http.StatusUnauthorized, gin.H{"code": "invalid_refresh_token"})
+		return
 	}
 
-	if time.Now().After(time.Unix(tokenClaims.Expiry, 0)) {
-		return nil, errors.New("refresh token has expired, logging out user")
+	if time.Unix(tokenClaims.Expiry, 0).Before(time.Now()) {
+		db.Db.Exec(`DELETE FROM refresh_token where token=?`, refreshToken)
+		context.JSON(http.StatusUnauthorized, gin.H{"code": "refresh_token_expired"})
+		return
 	}
 
 	var fetchedToken types.RefreshToken
@@ -33,16 +37,23 @@ func Refresh(context *gin.Context) (*string, error) {
 	err = db.Db.QueryRow(`SELECT id FROM refresh_token WHERE token=?`, refreshToken).Scan(&fetchedToken.Id)
 
 	if err != nil && err == sql.ErrNoRows {
-		return nil, errors.New("invalid token, does not match")
+		context.JSON(http.StatusUnauthorized, gin.H{"code": "refresh_token_expired"})
+		return
 	}
 
 	fetchedUser, err := service.GetUserById(tokenClaims.UserId)
 
 	if err != nil {
-		return nil, errors.New("no user found")
+		context.Status(http.StatusUnauthorized)
+		return
 	}
 
-	createdAccessToken := service.CreateLoginToken(fetchedUser.Id, fetchedUser.Username)
+	createdAccessToken, err := service.CreateLoginToken(fetchedUser.Id, fetchedUser.Username)
 
-	return &createdAccessToken, nil
+	if err != nil {
+		context.Status(http.StatusUnauthorized)
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"token": createdAccessToken, "username": fetchedUser.Username})
 }

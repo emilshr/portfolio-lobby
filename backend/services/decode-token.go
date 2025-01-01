@@ -1,10 +1,12 @@
 package service
 
 import (
+	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"portfolio/lobby/constants"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type ConfirmationTokenClaims struct {
@@ -57,17 +59,22 @@ func DecodeConfirmationToken(token string) (*ConfirmationTokenClaims, bool) {
 	return &tokenClaims, verifiedToken.Valid
 }
 
-func DecodeLoginToken(token string) bool {
-	verifiedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+func DecodeLoginToken(token string) (*LoginTokenClaims, bool, error) {
+	var loginTokenClaims LoginTokenClaims
+	verifiedToken, err := jwt.ParseWithClaims(token, &loginTokenClaims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
 		return constants.LOGIN_JWT_SECRET, nil
 	})
 
 	if err != nil {
+		println("error here")
 		fmt.Println("Error while parsing token ", err.Error())
-		return false
+		return nil, false, errors.New("error while parsing token")
 	}
 
-	return verifiedToken.Valid
+	return &loginTokenClaims, verifiedToken.Valid, nil
 }
 
 func DecodePasswordResetToken(token string) (*PasswordResetClaims, error) {
@@ -88,7 +95,7 @@ func DecodePasswordResetToken(token string) (*PasswordResetClaims, error) {
 	return &passwordResetTokenClaims, nil
 }
 
-func DecodeRefreshToken(token string) (*RefreshTokenClaims, error) {
+func DecodeRefreshToken(token string) (*RefreshTokenClaims, bool, error) {
 	var refreshTokenClaims RefreshTokenClaims
 
 	verifiedToken, err := jwt.ParseWithClaims(token, &refreshTokenClaims, func(token *jwt.Token) (interface{}, error) {
@@ -97,11 +104,8 @@ func DecodeRefreshToken(token string) (*RefreshTokenClaims, error) {
 
 	if err != nil {
 		fmt.Printf("Error while decoding password reset token %s\n", err.Error())
-		return nil, fmt.Errorf("error while decoding password reset token %s", err.Error())
-	}
-	if !verifiedToken.Valid {
-		return nil, fmt.Errorf("reset password token is invalid")
+		return nil, false, fmt.Errorf("error while decoding password reset token %s", err.Error())
 	}
 
-	return &refreshTokenClaims, nil
+	return &refreshTokenClaims, verifiedToken.Valid, nil
 }

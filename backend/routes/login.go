@@ -13,14 +13,19 @@ func Login(context *gin.Context) {
 
 	result, err := service.Login(email, password)
 
-	var httpStatus int
-
-	if err != nil && result != nil {
-		httpStatus = http.StatusOK
-		context.SetCookie(constants.REFRESH_TOKEN_COOKIE, result.RefreshToken, 86400, "/", constants.BACKEND_HOST_DOMAIN, true, true)
-		context.JSON(httpStatus, result)
-	} else {
-		httpStatus = http.StatusUnauthorized
+	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
 	}
+
+	_, err = service.StoreRefreshToken(result.RefreshToken)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	context.SetCookie(constants.REFRESH_TOKEN_COOKIE, result.RefreshToken, 86400, "/", "", true, true)
+	context.JSON(http.StatusOK, gin.H{"accessToken": result.AccessToken, "username": result.Username})
+
 }

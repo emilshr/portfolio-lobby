@@ -42,5 +42,9 @@ func ListMessages() (*[]MessagesResponse, error) {
 		response = append(response, chat)
 	}
 
+	if response == nil {
+		response = []MessagesResponse{}
+	}
+
 	return &response, nil
 }

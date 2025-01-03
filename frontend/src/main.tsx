@@ -26,9 +26,9 @@ createRoot(document.getElementById("root")!).render(
         <AuthRefresher />
         <BrowserRouter>
           <ThemeProvider defaultTheme="dark" storageKey="site-theme">
-            <div className="flex flex-col gap-y-8 min-h-svh w-svw items-center pb-5 px-4 sm:px-4 md:px-8 selection:bg-yellow-400">
+            <div className="flex flex-col gap-y-8 h-svh w-svw items-center pb-5 px-4 sm:px-4 md:px-8 dark:selection:bg-gray-700 selection:bg-gray-300 relative">
               <Navbar />
-              <div className="md:max-w-[80ch] w-full grow flex flex-col">
+              <div className="md:max-w-[80ch] w-full flex flex-col overflow-y-scroll h-full">
                 <RoutesWrapper />
               </div>
             </div>

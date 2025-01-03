@@ -12,7 +12,6 @@ func Login(context *gin.Context) {
 	password := context.Request.FormValue("password")
 
 	result, err := service.Login(email, password)
-
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return
@@ -25,7 +24,8 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	context.SetCookie(constants.REFRESH_TOKEN_COOKIE, result.RefreshToken, 86400, "/", "", true, true)
+	context.SetCookie(constants.REFRESH_TOKEN_COOKIE, result.RefreshToken, 86400, "/", "", false, true)
+
 	context.JSON(http.StatusOK, gin.H{"accessToken": result.AccessToken, "username": result.Username})
 
 }

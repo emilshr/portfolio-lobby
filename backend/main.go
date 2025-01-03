@@ -1,13 +1,12 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"portfolio/lobby/db"
 	middleware "portfolio/lobby/middlewares"
 	"portfolio/lobby/routes"
 	"portfolio/lobby/services"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -16,12 +15,13 @@ func main() {
 	service.InitializeEmailClient()
 
 	router := gin.Default()
-	// router.Use(middleware.CorsMiddleware())
 
 	config := cors.DefaultConfig()
 	config.AllowCredentials = true
-	config.AllowHeaders = []string{"Authorization"}
-	config.AllowOrigins = []string{"http://localhost:5173"}
+	config.AllowHeaders = []string{"Authorization", "Origin"}
+	config.AllowOrigins = []string{"http://localhost:5173", "http://localhost"}
+	config.AddAllowHeaders("Authorization", "Origin", "Content-Type", "Set-Cookie", "Credentials", "Content-Length", "Access-Control-Allow-Credentials")
+	config.AddExposeHeaders("Set-Cookie")
 
 	router.Use(cors.New(config))
 

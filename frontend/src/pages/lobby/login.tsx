@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { useContext, useState } from "react";
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("test@gmail.com");
+  const [password, setPassword] = useState("pass");
   const { mutateAsync, isPending } = useLoginMutation();
   const { dispatch } = useContext(AuthContext);
 
@@ -29,7 +29,7 @@ export const Login = () => {
         <DialogHeader>
           <DialogTitle>Sign up to join the conversation</DialogTitle>
           <DialogDescription>
-            <div className="flex flex-col gap-y-2">
+            <span className="flex flex-col gap-y-2">
               <Input
                 placeholder="Email"
                 type="email"
@@ -67,7 +67,7 @@ export const Login = () => {
               >
                 Login
               </Button>
-            </div>
+            </span>
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

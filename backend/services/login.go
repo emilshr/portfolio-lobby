@@ -3,9 +3,8 @@ package service
 import (
 	"errors"
 	"fmt"
-	"portfolio/lobby/db"
-
 	"golang.org/x/crypto/bcrypt"
+	"portfolio/lobby/db"
 )
 
 type Response struct {

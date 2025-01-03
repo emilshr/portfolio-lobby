@@ -23,7 +23,6 @@ export type LoggedInAction = {
   payload: {
     username: string;
     token: string;
-    isLoggedIn: boolean;
   };
 };
 
@@ -45,6 +44,7 @@ export type AuthActions =
 export const initialAuthState: AuthState = {
   isLoggedIn: false,
   loading: true,
+  token: localStorage.getItem("token") ?? undefined,
 };
 
 // Context
@@ -72,11 +72,10 @@ export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
   const { type } = action;
   switch (type) {
     case AuthActionType.LOGGED_IN: {
-      const { isLoggedIn, token, username } = action.payload;
-      localStorage.setItem("token", token);
+      const { token, username } = action.payload;
       return {
         ...state,
-        isLoggedIn,
+        isLoggedIn: true,
         token,
         username,
         loading: false,
@@ -84,7 +83,6 @@ export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
     }
     case AuthActionType.LOGIN_FAILED:
     case AuthActionType.LOGGED_OUT: {
-      localStorage.removeItem("token");
       return {
         ...state,
         isLoggedIn: false,
@@ -110,4 +108,12 @@ export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
     default:
       return state;
   }
+};
+
+// jwt state
+
+export type JwtPayload = {
+  exp: number;
+  userId: number;
+  username: string;
 };

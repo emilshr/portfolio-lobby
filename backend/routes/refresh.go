@@ -2,19 +2,22 @@ package routes
 
 import (
 	"database/sql"
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"net/http"
 	"portfolio/lobby/constants"
 	"portfolio/lobby/db"
 	service "portfolio/lobby/services"
 	"portfolio/lobby/types"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Refresh(context *gin.Context) {
 	refreshToken, err := context.Cookie(constants.REFRESH_TOKEN_COOKIE)
 
 	if err != nil {
+		fmt.Println("Refresh token cookie not found ", err.Error())
 		context.Status(http.StatusUnauthorized)
 		return
 	}
@@ -26,7 +29,7 @@ func Refresh(context *gin.Context) {
 		return
 	}
 
-	if time.Unix(tokenClaims.Expiry, 0).Before(time.Now()) {
+	if tokenClaims.ExpiresAt.Before(time.Now()) {
 		db.Db.Exec(`DELETE FROM refresh_token where token=?`, refreshToken)
 		context.JSON(http.StatusUnauthorized, gin.H{"code": "refresh_token_expired"})
 		return

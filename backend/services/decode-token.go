@@ -3,44 +3,39 @@ package service
 import (
 	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"portfolio/lobby/constants"
 	"time"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type ConfirmationTokenClaims struct {
+	UserId string `json:"userId"`
 	jwt.RegisteredClaims
-	UserId string
-	Expiry int64
 }
 
 type LoginTokenClaims struct {
+	UserId   int8   `json:"userId"`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
-	UserId   int8
-	Username string
-	Expiry   int64
-	IssuedAt int64
 }
 
 type PasswordResetClaims struct {
+	Email string `json:"email"`
 	jwt.RegisteredClaims
-	Email    string
-	IssuedAt int64
-	Expiry   int64
 }
 
 type RefreshTokenClaims struct {
+	UserId int8 `json:"userId"`
 	jwt.RegisteredClaims
-	UserId   int8
-	IssuedAt int64
-	Expiry   int64
 }
 
 func DecodeConfirmationToken(token string) (*ConfirmationTokenClaims, bool) {
 	var tokenClaims ConfirmationTokenClaims
 
 	verifiedToken, err := jwt.ParseWithClaims(token, &tokenClaims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method for confirmation token: %v", token.Header["alg"])
+		}
 		return constants.CONFIRMATION_JWT_SECRET, nil
 	})
 
@@ -49,10 +44,11 @@ func DecodeConfirmationToken(token string) (*ConfirmationTokenClaims, bool) {
 		return nil, false
 	}
 
-	unixTime := time.Unix(tokenClaims.Expiry, 0)
+	exp, _ := tokenClaims.GetExpirationTime()
 
-	if unixTime.Before(time.Now()) {
-		fmt.Println("Time are", time.Now().String(), unixTime.String())
+	println("verified token ", exp.Time.String())
+
+	if tokenClaims.ExpiresAt.Time.Before(time.Now()) {
 		return nil, false
 	}
 
@@ -63,15 +59,14 @@ func DecodeLoginToken(token string) (*LoginTokenClaims, bool, error) {
 	var loginTokenClaims LoginTokenClaims
 	verifiedToken, err := jwt.ParseWithClaims(token, &loginTokenClaims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method for access token: %v", token.Header["alg"])
 		}
 		return constants.LOGIN_JWT_SECRET, nil
 	})
 
 	if err != nil {
-		println("error here")
-		fmt.Println("Error while parsing token ", err.Error())
-		return nil, false, errors.New("error while parsing token")
+		fmt.Println("Error while parsing access token", err.Error())
+		return nil, false, errors.New("error while parsing access token")
 	}
 
 	return &loginTokenClaims, verifiedToken.Valid, nil
@@ -81,6 +76,9 @@ func DecodePasswordResetToken(token string) (*PasswordResetClaims, error) {
 	var passwordResetTokenClaims PasswordResetClaims
 
 	verifiedToken, err := jwt.ParseWithClaims(token, &passwordResetTokenClaims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method for password reset token: %v", token.Header["alg"])
+		}
 		return constants.PASSWORD_RESET_JWT_SECRET, nil
 	})
 
@@ -99,12 +97,15 @@ func DecodeRefreshToken(token string) (*RefreshTokenClaims, bool, error) {
 	var refreshTokenClaims RefreshTokenClaims
 
 	verifiedToken, err := jwt.ParseWithClaims(token, &refreshTokenClaims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method for refresh token: %v", token.Header["alg"])
+		}
 		return constants.REFRESH_JWT_SECRET, nil
 	})
 
 	if err != nil {
-		fmt.Printf("Error while decoding password reset token %s\n", err.Error())
-		return nil, false, fmt.Errorf("error while decoding password reset token %s", err.Error())
+		fmt.Printf("Error while decoding Refresh token %s\n", err.Error())
+		return nil, false, fmt.Errorf("error while decoding refresh token %s", err.Error())
 	}
 
 	return &refreshTokenClaims, verifiedToken.Valid, nil

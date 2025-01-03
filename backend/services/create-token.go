@@ -2,19 +2,20 @@ package service
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"portfolio/lobby/constants"
 	"portfolio/lobby/db"
 	"time"
-
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateConfirmationToken(userId int64) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, ConfirmationTokenClaims{
-		RegisteredClaims: jwt.RegisteredClaims{},
-		UserId:           fmt.Sprint(userId),
-		Expiry:           time.Now().Add(time.Minute * 15).Unix(),
+		UserId: fmt.Sprint(userId),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	})
 
 	signedToken, err := token.SignedString(constants.CONFIRMATION_JWT_SECRET)
@@ -28,14 +29,15 @@ func CreateConfirmationToken(userId int64) string {
 
 func CreateLoginToken(userId int8, username string) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, LoginTokenClaims{
-		RegisteredClaims: jwt.RegisteredClaims{},
-		UserId:           userId,
-		Username:         username,
-		IssuedAt:         time.Now().Unix(),
-		Expiry:           time.Now().Add(time.Minute * 30).Local().Unix(),
+		UserId:   userId,
+		Username: username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	})
 
-	signedToken, err := token.SignedString(constants.CONFIRMATION_JWT_SECRET)
+	signedToken, err := token.SignedString(constants.LOGIN_JWT_SECRET)
 
 	if err != nil {
 		return nil, err
@@ -46,10 +48,11 @@ func CreateLoginToken(userId int8, username string) (*string, error) {
 
 func CreatePasswordResetToken(email string) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, PasswordResetClaims{
-		RegisteredClaims: jwt.RegisteredClaims{},
-		Email:            email,
-		IssuedAt:         time.Now().Unix(),
-		Expiry:           time.Now().Add(time.Minute * 10).Unix(),
+		Email: email,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 10)),
+		},
 	})
 
 	signedToken, err := token.SignedString(constants.PASSWORD_RESET_JWT_SECRET)
@@ -75,10 +78,11 @@ func CreatePasswordResetToken(email string) (*string, error) {
 
 func CreateRefreshToken(userId int8) (*string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, RefreshTokenClaims{
-		RegisteredClaims: jwt.RegisteredClaims{},
-		UserId:           userId,
-		IssuedAt:         time.Now().Unix(),
-		Expiry:           time.Now().Add(time.Hour * 24).Unix(),
+		UserId: userId,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+		},
 	})
 
 	signedToken, err := token.SignedString(constants.REFRESH_JWT_SECRET)

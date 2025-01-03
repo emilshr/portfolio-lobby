@@ -2,12 +2,11 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"portfolio/lobby/constants"
 	service "portfolio/lobby/services"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 func ProtectedRoute() gin.HandlerFunc {
@@ -24,7 +23,7 @@ func ProtectedRoute() gin.HandlerFunc {
 			return
 		}
 
-		if time.Unix(decodedToken.Expiry, 0).Before(time.Now()) {
+		if decodedToken.ExpiresAt.Time.Before(time.Now()) {
 			ctx.Status(http.StatusUnauthorized)
 			return
 		}
@@ -32,7 +31,7 @@ func ProtectedRoute() gin.HandlerFunc {
 		refreshToken, err := ctx.Cookie(constants.REFRESH_TOKEN_COOKIE)
 
 		if err != nil {
-			fmt.Println("Error while accessing access token ", err.Error())
+			fmt.Println("Error while accessing access token", err.Error())
 			ctx.Status(http.StatusUnauthorized)
 			return
 		}

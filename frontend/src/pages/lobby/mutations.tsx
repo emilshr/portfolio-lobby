@@ -1,3 +1,4 @@
+import { useApiMutation } from "@/auth/hooks";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 
@@ -24,10 +25,8 @@ export const useSendMessage = ({ onSuccess }: SendMessageHandlers) => {
 };
 
 export const useLogout = () => {
-  return useMutation<void, AxiosError<{ code: string }>>({
+  return useApiMutation<void, void>({
+    method: "POST",
     mutationKey: ["logout"],
-    mutationFn: async () => {
-      return axios.post("/logout");
-    },
   });
 };

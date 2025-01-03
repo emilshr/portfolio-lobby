@@ -1,16 +1,12 @@
 import { AuthActionType, AuthContext } from "@/auth/state";
 import {
+  MutationCache,
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import { useContext, useEffect, useState } from "react";
-
-type RefreshTokenResponse = {
-  token: string;
-  username: string;
-};
 
 export const QueryClientWrapper = ({
   children,
@@ -20,51 +16,49 @@ export const QueryClientWrapper = ({
     state: { token },
   } = useContext(AuthContext);
 
-  const makeRefreshTokenCall = async () => {
-    const { data } = await axios.get<
-      unknown,
-      AxiosResponse<RefreshTokenResponse>
-    >("/refresh");
-    return data;
-  };
-
   const [queryClient] = useState(
     new QueryClient({
-      queryCache: new QueryCache({
-        onError: (error) => {
+      mutationCache: new MutationCache({
+        onSettled(_data, error) {
           if (
+            error &&
             error.status === 401 &&
             (error as AxiosError<{ code: string }>).response?.data?.code ===
-              "access_token_expired"
+              "user_not_logged_in"
           ) {
-            dispatch({ type: AuthActionType.START_LOADING });
-            makeRefreshTokenCall()
-              .then(({ username, token }) => {
-                dispatch({
-                  type: AuthActionType.LOGGED_IN,
-                  payload: { isLoggedIn: true, username, token },
-                });
-              })
-              .catch(() => {
-                dispatch({
-                  type: AuthActionType.LOGGED_OUT,
-                });
-              })
-              .finally(() =>
-                dispatch({ type: AuthActionType.FINISHED_LOADING })
-              );
+            localStorage.removeItem("token");
+            console.warn("dispatching POST log out");
+            dispatch({ type: AuthActionType.LOGGED_OUT });
           }
+        },
+        onError(error) {
+          console.error({ error });
+        },
+      }),
+      queryCache: new QueryCache({
+        onSettled(_, error) {
+          if (
+            error &&
+            error.status === 401 &&
+            (error as AxiosError<{ code: string }>).response?.data?.code ===
+              "user_not_logged_in"
+          ) {
+            localStorage.removeItem("token");
+            console.warn("dispatching log out");
+            dispatch({ type: AuthActionType.LOGGED_OUT });
+          }
+        },
+        onError(error) {
+          console.error({ error });
         },
       }),
     })
   );
 
   useEffect(() => {
-    axios.defaults.baseURL = import.meta.env.VITE_API_URL;
     axios.defaults.withCredentials = true;
-  }, []);
+    axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
-  useEffect(() => {
     if (token) {
       axios.defaults.headers["Authorization"] = token;
     }

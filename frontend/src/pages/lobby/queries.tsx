@@ -1,7 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useApiQuery } from "@/auth/hooks";
 
-type Message = {
+export type Message = {
   id: number;
   username: string;
   message: string;
@@ -13,11 +12,8 @@ type GetMessagesResponse = {
 };
 
 export const useGetChats = () => {
-  return useQuery({
+  return useApiQuery<GetMessagesResponse>({
     queryKey: ["messages"],
-    queryFn: async () => {
-      const { data } = await axios.get<GetMessagesResponse>("/messages");
-      return data?.messages ?? [];
-    },
+    refetchInterval: 5000,
   });
 };

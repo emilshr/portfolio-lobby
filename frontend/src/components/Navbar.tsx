@@ -6,7 +6,7 @@ export const Navbar = () => {
   return (
     <nav className="flex justify-between w-full md:max-w-[80ch] pt-5 sm:pt-16">
       <p
-        className="text-2xl font-bold cursor-pointer"
+        className="text-2xl cursor-pointer"
         onClick={(event) => {
           event.stopPropagation();
           navigate("/");

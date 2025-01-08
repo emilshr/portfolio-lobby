@@ -1,6 +1,4 @@
-import { Login } from "../../auth/login";
-import { Register } from "../../auth/register";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthActionType, AuthContext } from "@/auth/state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,25 +7,17 @@ import { Message, useGetChats } from "./queries";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router";
 import { useAuthRefresher } from "@/auth/auth-refresher";
-import { Loader2 } from "lucide-react";
-
-const AuthForms = () => {
-  return (
-    <div className="flex flex-col gap-y-2 pb-6">
-      <div className="block space-x-1">
-        <Login />
-        <p className="inline-block">or</p>
-        <Register />
-        <p className="inline-block">to leave a message</p>
-      </div>
-      <hr />
-    </div>
-  );
-};
+import {
+  Pagination,
+  PaginationContent,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { AuthForms } from "@/auth/auth-forms";
 
 const LobbyNavbar = () => {
   const {
-    state: { isLoggedIn, loading, username },
+    state: { isLoggedIn, username },
     dispatch,
   } = useContext(AuthContext);
 
@@ -35,46 +25,37 @@ const LobbyNavbar = () => {
 
   const { mutateAsync, isPending } = useLogout();
 
-  if (loading) {
+  if (isLoggedIn) {
     return (
-      <div className="flex flex-col gap-y-2 pb-4">
-        <div className="flex gap-x-2 items-center">
-          <p className="dark:text-neutral-400 text-neutral-500">
-            Checking if you are logged in or not
-          </p>
-          <Loader2 className="animate-spin" size="20" />
+      <div className="flex flex-col pb-4">
+        <div className="flex justify-between">
+          <h2>Welcome @{username}</h2>
+          <Button
+            variant="link"
+            onClick={() => {
+              dispatch({ type: AuthActionType.START_LOADING });
+              mutateAsync()
+                .then(() => {
+                  dispatch({ type: AuthActionType.LOGGED_OUT });
+                  navigate("/");
+                })
+                .finally(() => {
+                  dispatch({ type: AuthActionType.FINISHED_LOADING });
+                });
+            }}
+            disabled={isPending}
+          >
+            Log out
+          </Button>
         </div>
         <hr />
       </div>
     );
   }
 
-  if (!isLoggedIn) {
-    return <AuthForms />;
-  }
-
   return (
-    <div className="flex flex-col pb-4">
-      <div className="flex justify-between">
-        <h2>Welcome @{username}</h2>
-        <Button
-          variant="link"
-          onClick={() => {
-            dispatch({ type: AuthActionType.START_LOADING });
-            mutateAsync()
-              .then(() => {
-                dispatch({ type: AuthActionType.LOGGED_OUT });
-                navigate("/");
-              })
-              .finally(() => {
-                dispatch({ type: AuthActionType.FINISHED_LOADING });
-              });
-          }}
-          disabled={isPending}
-        >
-          Log out
-        </Button>
-      </div>
+    <div className="flex flex-col gap-y-2 pb-6">
+      <AuthForms />
       <hr />
     </div>
   );
@@ -128,24 +109,61 @@ const ChatInputs = ({ onSendingMessage }: ChatInputProps) => {
 
 type ChatRoomProps = {
   messages: Message[];
-  chatWindowRef: React.MutableRefObject<HTMLDivElement | null>;
+  onPrevious: () => void;
+  onNext: () => void;
+  isNextDisabled: boolean;
+  isPreviousDisabled: boolean;
 };
 
-const ChatRoom = ({ messages }: ChatRoomProps) => {
+const ChatRoom = ({
+  messages,
+  onNext,
+  onPrevious,
+  isNextDisabled,
+  isPreviousDisabled,
+}: ChatRoomProps) => {
   if (messages.length === 0) {
     return <div className="h-full pt-4">No guests visited yet</div>;
   }
 
   return (
     <div className="h-full">
-      {messages.map(({ id, message, username }) => {
-        return (
-          <div key={id} className={cn("flex gap-x-2 items-start py-1")}>
-            <p className="dark:text-gray-400 text-gray-700">{username}: </p>
-            <p>{message}</p>
-          </div>
-        );
-      })}
+      <div>
+        {messages.map(({ id, message, username }) => {
+          return (
+            <div key={id} className={cn("flex gap-x-2 items-start py-1")}>
+              <p className="dark:text-gray-400 text-gray-700">{username}: </p>
+              <p>{message}</p>
+            </div>
+          );
+        })}
+      </div>
+      {messages.length >= 20 && (
+        <div className="w-full">
+          <Pagination className="justify-end">
+            <PaginationContent>
+              <PaginationPrevious
+                isActive={!isPreviousDisabled}
+                onClick={() => {
+                  if (!isPreviousDisabled) {
+                    onPrevious();
+                  }
+                }}
+                aria-disabled={!isPreviousDisabled}
+              />
+              <PaginationNext
+                isActive={!isNextDisabled}
+                onClick={() => {
+                  if (!isNextDisabled) {
+                    onNext();
+                  }
+                }}
+                aria-disabled={!isNextDisabled}
+              />
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };
@@ -154,15 +172,16 @@ const Chat = () => {
   const {
     state: { username = "" },
   } = useContext(AuthContext);
+  const [page, setPage] = useState(0);
 
-  const { data: { data: messagesResponse } = {}, isFetched } = useGetChats();
+  const { data: { data: messagesResponse } = {}, isFetched } =
+    useGetChats(page);
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const chatWindowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isFetched) {
-      setMessages(messagesResponse?.messages ?? []);
+      setMessages(messagesResponse?.data ?? []);
     }
   }, [isFetched, messagesResponse]);
 
@@ -181,7 +200,17 @@ const Chat = () => {
           setMessages(updatedMessages);
         }}
       />
-      <ChatRoom messages={messages} chatWindowRef={chatWindowRef} />
+      <ChatRoom
+        messages={messages}
+        onNext={() => {
+          setPage(page + 1);
+        }}
+        onPrevious={() => {
+          setPage(page - 1);
+        }}
+        isNextDisabled={!messagesResponse?.hasMoreRecords}
+        isPreviousDisabled={page === 0}
+      />
     </>
   );
 };

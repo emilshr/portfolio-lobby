@@ -16,6 +16,12 @@ func SendMessage(message string, userId int8) (bool, error) {
 	return true, nil
 }
 
+type PaginatedResponse struct {
+	Page           int                `json:"page"`
+	HasMoreRecords bool               `json:"hasMoreRecords"`
+	Data           []MessagesResponse `json:"data"`
+}
+
 type MessagesResponse struct {
 	Id       int8   `json:"id"`
 	Message  string `json:"message"`
@@ -23,10 +29,10 @@ type MessagesResponse struct {
 	SentAt   string `json:"sentAt"`
 }
 
-func ListMessages() (*[]MessagesResponse, error) {
-	var response []MessagesResponse
+func ListMessages(page int) (*PaginatedResponse, error) {
+	var response PaginatedResponse
 
-	results, err := db.Db.Query(`select chat.id, chat.message, chat.created_at, user.username from chat LEFT JOIN user on chat.user_id=user.id ORDER BY chat.created_at DESC;`)
+	results, err := db.Db.Query(`select chat.id, chat.message, chat.created_at, user.username from chat LEFT JOIN user on chat.user_id=user.id ORDER BY chat.created_at DESC LIMIT ?,?;`, (page * 20), 21)
 
 	if err != nil {
 		fmt.Println("Error while querying for messages ", err.Error())
@@ -37,13 +43,29 @@ func ListMessages() (*[]MessagesResponse, error) {
 
 	var chat MessagesResponse
 
+	var messages []MessagesResponse
+
+	var count int = 0
+	var hasMoreRecords bool = false
+
 	for results.Next() {
+		if count >= 20 {
+			hasMoreRecords = true
+			break
+		}
 		results.Scan(&chat.Id, &chat.Message, &chat.SentAt, &chat.Username)
-		response = append(response, chat)
+		messages = append(messages, chat)
+		count++
 	}
 
-	if response == nil {
-		response = []MessagesResponse{}
+	if messages == nil {
+		messages = []MessagesResponse{}
+	}
+
+	response = PaginatedResponse{
+		Page:           page,
+		HasMoreRecords: hasMoreRecords,
+		Data:           messages,
 	}
 
 	return &response, nil

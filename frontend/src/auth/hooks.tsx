@@ -82,14 +82,21 @@ export const useValidateToken = () => {
   return { validateToken };
 };
 
-type ApiQueryOptions = {
+type ApiQueryOptions<RequestParams = undefined> = {
   queryKey: QueryKey;
+  path: string[];
+  params?: RequestParams;
 };
 
-export const useApiQuery = <ResponseBody = undefined,>({
+export const useApiQuery = <
+  ResponseBody = undefined,
+  RequestParams = undefined
+>({
   queryKey,
+  params,
+  path,
   ...options
-}: ApiQueryOptions &
+}: ApiQueryOptions<RequestParams> &
   UndefinedInitialDataOptions<
     unknown,
     unknown,
@@ -101,7 +108,7 @@ export const useApiQuery = <ResponseBody = undefined,>({
     queryKey,
     queryFn: async () => {
       await validateToken();
-      return await apiClient("GET", queryKey.join("/"));
+      return await apiClient("GET", path.join("/"), { params });
     },
   });
 };

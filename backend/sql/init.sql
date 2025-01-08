@@ -46,4 +46,12 @@ CREATE TABLE
         FOREIGN KEY (`user_id`) REFERENCES user (`id`)
     );
 
--- CREATE TABLE IF NOT EXISTS
+CREATE TABLE
+    IF NOT EXISTS comment (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        comment VARCHAR(255) NOT NULL,
+        post_slug VARCHAR(255) NOT NULL,
+        user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (`user_id`) REFERENCES user (`id`)
+    );

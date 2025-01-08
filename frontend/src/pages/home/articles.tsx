@@ -4,7 +4,7 @@ import { NavLink } from "react-router";
 export const Articles = () => {
   return (
     <div className="flex flex-col gap-y-3">
-      <p className="text-lg font-bold">Articles</p>
+      <p className="text-lg">Articles</p>
       <ul className="space-y-1">
         {BLOGS.map(({ title, slug }) => (
           <li key={slug}>

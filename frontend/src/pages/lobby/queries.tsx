@@ -1,4 +1,5 @@
 import { useApiQuery } from "@/auth/hooks";
+import { PaginatedResponse } from "../common";
 
 export type Message = {
   id: number;
@@ -7,13 +8,11 @@ export type Message = {
   sentAt: Date;
 };
 
-type GetMessagesResponse = {
-  messages: Message[];
-};
-
-export const useGetChats = () => {
-  return useApiQuery<GetMessagesResponse>({
-    queryKey: ["messages"],
-    // refetchInterval: 5000,
+export const useGetChats = (page: number) => {
+  return useApiQuery<PaginatedResponse<Message>, { page: number }>({
+    path: ["messages"],
+    queryKey: ["messages", page],
+    params: { page },
+    refetchInterval: 5000,
   });
 };

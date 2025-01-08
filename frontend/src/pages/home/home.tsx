@@ -52,19 +52,19 @@ const SocialLinks = () => {
       <h2>Social links:</h2>
       <div className="flex gap-x-2">
         <Button variant="ghost" size="icon">
-          <SiFacebook />
+          <SiFacebook color="default" />
         </Button>
         <Button variant="ghost" size="icon">
           <SiGithub />
         </Button>
         <Button variant="ghost" size="icon">
-          <SiLinkedin />
+          <SiLinkedin color="default" />
         </Button>
         <Button variant="ghost" size="icon">
           <SiX />
         </Button>
         <Button variant="ghost" size="icon">
-          <SiGmail />
+          <SiGmail color="default" />
         </Button>
       </div>
     </div>

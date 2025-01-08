@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	service "portfolio/lobby/services"
+	"strconv"
 )
 
 func SendMessage(context *gin.Context) {
@@ -29,12 +30,27 @@ func SendMessage(context *gin.Context) {
 }
 
 func ListMessages(context *gin.Context) {
-	fetchedMessages, err := service.ListMessages()
+	pageQuery := context.Query("page")
+
+	var page int = 0
+
+	if pageQuery != "" {
+		parsedPage, err := strconv.Atoi(pageQuery)
+
+		if err != nil {
+			context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid page number"})
+			return
+		}
+
+		page = parsedPage
+	}
+
+	paginatedResponse, err := service.ListMessages(page)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch messages"})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"messages": fetchedMessages})
+	context.JSON(http.StatusOK, paginatedResponse)
 }

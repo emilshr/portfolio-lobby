@@ -26,7 +26,6 @@ export const QueryClientWrapper = ({
             (error as AxiosError<{ code: string }>).response?.data?.code ===
               "user_not_logged_in"
           ) {
-            localStorage.removeItem("token");
             console.warn("dispatching POST log out");
             dispatch({ type: AuthActionType.LOGGED_OUT });
           }
@@ -43,7 +42,6 @@ export const QueryClientWrapper = ({
             (error as AxiosError<{ code: string }>).response?.data?.code ===
               "user_not_logged_in"
           ) {
-            localStorage.removeItem("token");
             console.warn("dispatching log out");
             dispatch({ type: AuthActionType.LOGGED_OUT });
           }

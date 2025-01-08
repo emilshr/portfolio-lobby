@@ -1,5 +1,5 @@
-import { Login } from "./login";
-import { Register } from "./register";
+import { Login } from "../../auth/login";
+import { Register } from "../../auth/register";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthActionType, AuthContext } from "@/auth/state";
 import { Button } from "@/components/ui/button";
@@ -8,24 +8,19 @@ import { useLogout, useSendMessage } from "./mutations";
 import { Message, useGetChats } from "./queries";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuthRefresher } from "@/auth/auth-refresher";
+import { Loader2 } from "lucide-react";
 
 const AuthForms = () => {
-  const {
-    state: { isLoggedIn, loading },
-  } = useContext(AuthContext);
-
-  if (loading) {
-    return <>Loading ...</>;
-  }
-
-  if (isLoggedIn) {
-    return <></>;
-  }
   return (
-    <div className="flex flex-col gap-y-4">
-      <Register />
-      <Login />
+    <div className="flex flex-col gap-y-2 pb-6">
+      <div className="block space-x-1">
+        <Login />
+        <p className="inline-block">or</p>
+        <Register />
+        <p className="inline-block">to leave a message</p>
+      </div>
+      <hr />
     </div>
   );
 };
@@ -41,38 +36,48 @@ const LobbyNavbar = () => {
   const { mutateAsync, isPending } = useLogout();
 
   if (loading) {
-    return <>Loading ...</>;
-  }
-
-  if (isLoggedIn) {
     return (
-      <div className="flex flex-col pb-4">
-        <div className="flex justify-between">
-          <h2 className="text-lg italic">Welcome @{username}</h2>
-          <Button
-            variant="link"
-            onClick={() => {
-              dispatch({ type: AuthActionType.START_LOADING });
-              mutateAsync()
-                .then(() => {
-                  dispatch({ type: AuthActionType.LOGGED_OUT });
-                  navigate("/");
-                })
-                .finally(() => {
-                  dispatch({ type: AuthActionType.FINISHED_LOADING });
-                  localStorage.removeItem("token");
-                });
-            }}
-            disabled={isPending}
-          >
-            Log out
-          </Button>
+      <div className="flex flex-col gap-y-2 pb-4">
+        <div className="flex gap-x-2 items-center">
+          <p className="dark:text-neutral-400 text-neutral-500">
+            Checking if you are logged in or not
+          </p>
+          <Loader2 className="animate-spin" size="20" />
         </div>
         <hr />
       </div>
     );
   }
-  return <></>;
+
+  if (!isLoggedIn) {
+    return <AuthForms />;
+  }
+
+  return (
+    <div className="flex flex-col pb-4">
+      <div className="flex justify-between">
+        <h2>Welcome @{username}</h2>
+        <Button
+          variant="link"
+          onClick={() => {
+            dispatch({ type: AuthActionType.START_LOADING });
+            mutateAsync()
+              .then(() => {
+                dispatch({ type: AuthActionType.LOGGED_OUT });
+                navigate("/");
+              })
+              .finally(() => {
+                dispatch({ type: AuthActionType.FINISHED_LOADING });
+              });
+          }}
+          disabled={isPending}
+        >
+          Log out
+        </Button>
+      </div>
+      <hr />
+    </div>
+  );
 };
 
 type ChatInputProps = {
@@ -80,15 +85,23 @@ type ChatInputProps = {
 };
 
 const ChatInputs = ({ onSendingMessage }: ChatInputProps) => {
+  const {
+    state: { isLoggedIn },
+  } = useContext(AuthContext);
   const [message, setMessage] = useState("");
   const { mutate, isPending } = useSendMessage({
     onSuccess() {},
   });
+
+  if (!isLoggedIn) {
+    return <></>;
+  }
+
   return (
-    <div className="flex gap-x-2 items-center pt-2">
+    <div className="flex gap-x-2 items-center pb-2">
       <Input
-        placeholder="Type your message"
-        className="grow"
+        placeholder="Leave a note"
+        className="grow text-sm"
         value={message}
         onChange={(event) => setMessage(event.target.value)}
         onKeyUp={(event) => {
@@ -107,7 +120,7 @@ const ChatInputs = ({ onSendingMessage }: ChatInputProps) => {
           setMessage("");
         }}
       >
-        Send
+        Sign
       </Button>
     </div>
   );
@@ -118,35 +131,28 @@ type ChatRoomProps = {
   chatWindowRef: React.MutableRefObject<HTMLDivElement | null>;
 };
 
-const ChatRoom = ({ messages, chatWindowRef: ref }: ChatRoomProps) => {
-  const { state } = useContext(AuthContext);
+const ChatRoom = ({ messages }: ChatRoomProps) => {
+  if (messages.length === 0) {
+    return <div className="h-full pt-4">No guests visited yet</div>;
+  }
 
   return (
-    <ScrollArea className="max-h-full" ref={ref}>
+    <div className="h-full">
       {messages.map(({ id, message, username }) => {
-        const isOwnMessage = state.username === username;
         return (
           <div key={id} className={cn("flex gap-x-2 items-start py-1")}>
-            <p
-              className={cn(
-                isOwnMessage
-                  ? "dark:bg-slate-600 bg-slate-200 rounded-md px-2"
-                  : "bg-none"
-              )}
-            >
-              {username}:{" "}
-            </p>
+            <p className="dark:text-gray-400 text-gray-700">{username}: </p>
             <p>{message}</p>
           </div>
         );
       })}
-    </ScrollArea>
+    </div>
   );
 };
 
 const Chat = () => {
   const {
-    state: { isLoggedIn, username = "" },
+    state: { username = "" },
   } = useContext(AuthContext);
 
   const { data: { data: messagesResponse } = {}, isFetched } = useGetChats();
@@ -160,37 +166,30 @@ const Chat = () => {
     }
   }, [isFetched, messagesResponse]);
 
-  useEffect(() => {
-    if (chatWindowRef) {
-      const windowElement = chatWindowRef.current?.children.item(1);
-      if (windowElement && windowElement.lastElementChild) {
-        windowElement.lastElementChild.scrollIntoView(false);
-      }
-    }
-  }, [messages]);
-
-  if (isLoggedIn) {
-    return (
-      <>
-        <ChatRoom messages={messages} chatWindowRef={chatWindowRef} />
-        <ChatInputs
-          onSendingMessage={(message) => {
-            setMessages([
-              ...messages,
-              { id: Math.random(), message, sentAt: new Date(), username },
-            ]);
-          }}
-        />
-      </>
-    );
-  }
-  return <></>;
+  return (
+    <>
+      <ChatInputs
+        onSendingMessage={(message) => {
+          const updatedMessages = [...messages];
+          updatedMessages.unshift({
+            id: Math.random(),
+            message,
+            sentAt: new Date(),
+            username,
+          });
+          console.log({ updatedMessages, messages });
+          setMessages(updatedMessages);
+        }}
+      />
+      <ChatRoom messages={messages} chatWindowRef={chatWindowRef} />
+    </>
+  );
 };
 
 export const Lobby = () => {
+  useAuthRefresher();
   return (
     <>
-      <AuthForms />
       <div className="flex flex-col max-h-full py-1 px-1">
         <LobbyNavbar />
         <Chat />

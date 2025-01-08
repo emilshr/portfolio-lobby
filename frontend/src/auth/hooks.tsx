@@ -126,9 +126,9 @@ export const useApiMutation = <ResponseBody = unknown, RequestBody = unknown>({
 
   return useMutation<AxiosResponse<ResponseBody>, unknown, RequestBody>({
     ...options,
-    mutationFn: async (...args) => {
+    mutationFn: async (data: RequestBody) => {
       await validateToken();
-      return apiClient(method, mutationKey.join("/"), { data: args });
+      return apiClient(method, mutationKey.join("/"), { data });
     },
   });
 };

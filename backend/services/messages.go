@@ -26,7 +26,7 @@ type MessagesResponse struct {
 func ListMessages() (*[]MessagesResponse, error) {
 	var response []MessagesResponse
 
-	results, err := db.Db.Query(`select chat.id, chat.message, chat.created_at, user.username from chat LEFT JOIN user on chat.user_id=user.id`)
+	results, err := db.Db.Query(`select chat.id, chat.message, chat.created_at, user.username from chat LEFT JOIN user on chat.user_id=user.id ORDER BY chat.created_at DESC;`)
 
 	if err != nil {
 		fmt.Println("Error while querying for messages ", err.Error())

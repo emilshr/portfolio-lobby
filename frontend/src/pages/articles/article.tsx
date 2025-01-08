@@ -33,6 +33,7 @@ export const Article = () => {
   return (
     <Markdown
       remarkPlugins={[remarkGfm]}
+      className="text-sm leading-7"
       components={{
         h1(props) {
           return (
@@ -96,7 +97,7 @@ export const Article = () => {
           );
         },
         p(props) {
-          return <p className="pb-6 leading-5" {...props} />;
+          return <p className="pb-6" {...props} />;
         },
         ul(props) {
           return <ul className="pl-4 list-disc space-y-1" {...props} />;

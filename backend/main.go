@@ -33,11 +33,11 @@ func main() {
 	router.GET("/confirm/:token", routes.ConfirmAccount)
 	router.POST("/get-reset-password", routes.GetResetPasswordLink)
 	router.POST("/reset-password/:token", routes.ResetPassword)
+	router.GET("/messages", routes.ListMessages)
 
 	// Protected routes
 	router.Use(middleware.ProtectedRoute())
 	router.POST("/messages", routes.SendMessage)
-	router.GET("/messages", routes.ListMessages)
 	router.POST("/logout", routes.Logout)
 
 	router.Run("0.0.0.0:8080")

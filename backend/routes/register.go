@@ -63,7 +63,8 @@ func Register(context *gin.Context) {
 	createdUserId, err := createdUserResult.LastInsertId()
 
 	if err != nil {
-		log.Fatal("Error while fetching the ID of the last inserted user")
+		fmt.Println("Error while fetching the ID of the last inserted user")
+
 	}
 
 	generatedConfirmationToken := service.CreateConfirmationToken(createdUserId)

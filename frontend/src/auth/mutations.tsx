@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
+import { useApiMutation } from "./hooks";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -54,5 +55,12 @@ export const useRegisterMutation = () => {
 
       await axios.post("/register", formData);
     },
+  });
+};
+
+export const useGetResetPassword = () => {
+  return useApiMutation<void, { email: string }>({
+    method: "POST",
+    mutationKey: ["get-reset-password"],
   });
 };

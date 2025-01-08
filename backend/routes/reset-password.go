@@ -14,16 +14,18 @@ func ResetPassword(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "No token found"})
 	}
 
-	decodedToken, err := service.DecodePasswordResetToken(token)
+	fetchedToken, decodedToken, err := service.IsPasswordResetTokenValid(token)
 
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Invalid token"})
+	if decodedToken == nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
 	}
 
-	isUpdated, err := service.UpdatePassword(password, decodedToken.Email)
+	isUpdated, err := service.UpdatePassword(password, decodedToken.Email, fetchedToken.Id)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to update password"})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	if isUpdated {

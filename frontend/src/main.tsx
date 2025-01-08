@@ -16,19 +16,19 @@ import "@fontsource/inter/700-italic.css";
 import "@fontsource/inter/800-italic.css";
 import "@fontsource/inter/900-italic.css";
 import { QueryClientWrapper } from "./components/query-client-wrapper.tsx";
-import { AuthInit } from "./components/auth-init.tsx";
-import { AuthRefresher } from "./auth/auth-refresher.tsx";
+import { AuthInit } from "./auth/auth-init.tsx";
+import { Toaster } from "./components/ui/toaster.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthInit>
       <QueryClientWrapper>
-        <AuthRefresher />
         <BrowserRouter>
           <ThemeProvider defaultTheme="dark" storageKey="site-theme">
-            <div className="flex flex-col gap-y-8 h-svh w-svw items-center pb-5 px-4 sm:px-4 md:px-8 dark:selection:bg-gray-700 selection:bg-gray-300 relative">
+            <Toaster />
+            <div className="text-sm leading-7 flex flex-col gap-y-8 h-svh w-svw items-center pb-5 px-4 sm:px-4 md:px-8 dark:selection:bg-gray-700 selection:bg-gray-300 relative">
               <Navbar />
-              <div className="md:max-w-[80ch] w-full flex flex-col overflow-y-scroll h-full">
+              <div className="md:max-w-[80ch] w-full flex flex-col h-full">
                 <RoutesWrapper />
               </div>
             </div>

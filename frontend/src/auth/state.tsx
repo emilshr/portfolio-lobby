@@ -73,6 +73,7 @@ export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
   switch (type) {
     case AuthActionType.LOGGED_IN: {
       const { token, username } = action.payload;
+      localStorage.setItem("token", token);
       return {
         ...state,
         isLoggedIn: true,
@@ -83,6 +84,7 @@ export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
     }
     case AuthActionType.LOGIN_FAILED:
     case AuthActionType.LOGGED_OUT: {
+      localStorage.removeItem("token");
       return {
         ...state,
         isLoggedIn: false,

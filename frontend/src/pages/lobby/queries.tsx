@@ -14,6 +14,6 @@ type GetMessagesResponse = {
 export const useGetChats = () => {
   return useApiQuery<GetMessagesResponse>({
     queryKey: ["messages"],
-    refetchInterval: 5000,
+    // refetchInterval: 5000,
   });
 };

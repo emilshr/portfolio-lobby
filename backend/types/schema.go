@@ -10,10 +10,11 @@ type User struct {
 }
 
 type PasswordReset struct {
-	Id        int8   `json:"id"`
-	UserId    int8   `json:"user_id"`
-	Token     string `json:"token"`
-	CreatedAt string `json:"created_at"`
+	Id         int8   `json:"id"`
+	UserId     int8   `json:"user_id"`
+	Token      string `json:"token"`
+	IsVerified bool   `json:"is_verified"`
+	CreatedAt  string `json:"created_at"`
 }
 
 type Token struct {

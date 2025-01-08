@@ -5,7 +5,7 @@ export const Articles = () => {
   return (
     <div className="flex flex-col gap-y-3">
       <p className="text-lg font-bold">Articles</p>
-      <ul className="pl-4 list-disc space-y-1">
+      <ul className="space-y-1">
         {BLOGS.map(({ title, slug }) => (
           <li key={slug}>
             <NavLink

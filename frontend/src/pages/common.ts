@@ -1,5 +1,5 @@
 export type PaginatedResponse<T> = {
   page: number;
-  hasMoreRecords: boolean;
+  has_more_records: boolean;
   data: T[];
 };

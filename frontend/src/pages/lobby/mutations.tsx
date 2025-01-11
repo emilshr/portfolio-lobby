@@ -27,6 +27,7 @@ export const useSendMessage = ({ onSuccess }: SendMessageHandlers) => {
 export const useLogout = () => {
   return useApiMutation<void, void>({
     method: "POST",
+    path: ["logout"],
     mutationKey: ["logout"],
   });
 };

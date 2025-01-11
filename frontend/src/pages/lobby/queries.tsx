@@ -5,7 +5,7 @@ export type Message = {
   id: number;
   username: string;
   message: string;
-  sentAt: Date;
+  sent_at: Date;
 };
 
 export const useGetChats = (page: number) => {

@@ -61,6 +61,7 @@ export const useRegisterMutation = () => {
 export const useGetResetPassword = () => {
   return useApiMutation<void, { email: string }>({
     method: "POST",
+    path: ["get-reset-password"],
     mutationKey: ["get-reset-password"],
   });
 };

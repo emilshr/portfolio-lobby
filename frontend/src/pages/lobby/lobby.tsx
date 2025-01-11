@@ -14,6 +14,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { AuthForms } from "@/auth/auth-forms";
+import { Loader2 } from "lucide-react";
 
 const LobbyNavbar = () => {
   const {
@@ -113,6 +114,7 @@ type ChatRoomProps = {
   onNext: () => void;
   isNextDisabled: boolean;
   isPreviousDisabled: boolean;
+  isLoading: boolean;
 };
 
 const ChatRoom = ({
@@ -121,6 +123,7 @@ const ChatRoom = ({
   onPrevious,
   isNextDisabled,
   isPreviousDisabled,
+  isLoading,
 }: ChatRoomProps) => {
   if (messages.length === 0) {
     return <div className="h-full pt-4">No guests visited yet</div>;
@@ -129,6 +132,12 @@ const ChatRoom = ({
   return (
     <div className="h-full">
       <div>
+        {isLoading && (
+          <span className="flex gap-x-2 items-center">
+            <p>Loading notes</p>
+            <Loader2 className="animate-spin" />
+          </span>
+        )}
         {messages.map(({ id, message, username }) => {
           return (
             <div key={id} className={cn("flex gap-x-2 items-start py-1")}>
@@ -174,8 +183,11 @@ const Chat = () => {
   } = useContext(AuthContext);
   const [page, setPage] = useState(0);
 
-  const { data: { data: messagesResponse } = {}, isFetched } =
-    useGetChats(page);
+  const {
+    data: { data: messagesResponse } = {},
+    isFetched,
+    isLoading,
+  } = useGetChats(page);
 
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -193,7 +205,7 @@ const Chat = () => {
           updatedMessages.unshift({
             id: Math.random(),
             message,
-            sentAt: new Date(),
+            sent_at: new Date(),
             username,
           });
           console.log({ updatedMessages, messages });
@@ -208,8 +220,9 @@ const Chat = () => {
         onPrevious={() => {
           setPage(page - 1);
         }}
-        isNextDisabled={!messagesResponse?.hasMoreRecords}
+        isNextDisabled={!messagesResponse?.has_more_records}
         isPreviousDisabled={page === 0}
+        isLoading={isLoading}
       />
     </>
   );

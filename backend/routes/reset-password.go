@@ -7,7 +7,15 @@ import (
 )
 
 func ResetPassword(context *gin.Context) {
-	password := context.Request.FormValue("password")
+	var resetPasswordInput struct {
+		Password string `json:"password" binding:"required" form:"password"`
+	}
+
+	if err := context.Bind(&resetPasswordInput); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
 	token, foundParam := context.Params.Get("token")
 
 	if !foundParam {
@@ -21,7 +29,7 @@ func ResetPassword(context *gin.Context) {
 		return
 	}
 
-	isUpdated, err := service.UpdatePassword(password, decodedToken.Email, fetchedToken.Id)
+	isUpdated, err := service.UpdatePassword(resetPasswordInput.Password, decodedToken.Email, fetchedToken.Id)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})

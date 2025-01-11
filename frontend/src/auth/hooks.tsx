@@ -16,8 +16,13 @@ export const apiClient = <ResponseBody = void, RequestBody = void>(
   path: string,
   config?: AxiosRequestConfig<RequestBody>
 ): Promise<AxiosResponse<ResponseBody>> => {
+  const formData = new FormData();
+  Object.entries(config?.data || {}).forEach(([key, value]) => {
+    formData.set(key, value as Blob);
+  });
   return axios.request({
     ...config,
+    data: formData,
     headers: { "Content-Type": "application/json", ...config?.headers },
     baseURL: import.meta.env.VITE_API_URL + path,
     withCredentials: true,
@@ -113,16 +118,23 @@ export const useApiQuery = <
   });
 };
 
-type ApiMutationOptions = {
+type ApiMutationOptions<RequestParams = undefined> = {
   method: Method;
+  path: string[];
+  params?: RequestParams;
   mutationKey: MutationKey;
 };
 
-export const useApiMutation = <ResponseBody = unknown, RequestBody = unknown>({
+export const useApiMutation = <
+  ResponseBody = undefined,
+  RequestBody = undefined,
+  RequestParams = undefined
+>({
   method,
-  mutationKey,
+  path,
+  params,
   ...options
-}: ApiMutationOptions &
+}: ApiMutationOptions<RequestParams> &
   UseMutationOptions<
     AxiosResponse<ResponseBody>,
     unknown,
@@ -135,7 +147,7 @@ export const useApiMutation = <ResponseBody = unknown, RequestBody = unknown>({
     ...options,
     mutationFn: async (data: RequestBody) => {
       await validateToken();
-      return apiClient(method, mutationKey.join("/"), { data });
+      return apiClient(method, path.join("/"), { data, params });
     },
   });
 };

@@ -15,15 +15,22 @@ import (
 )
 
 func Register(context *gin.Context) {
-	username := context.Request.FormValue("username")
-	email := context.Request.FormValue("email")
-	password := context.Request.FormValue("password")
+	var registerInput struct {
+		Email    string `json:"email" binding:"required" form:"email"`
+		Username string `json:"username" binding:"required" form:"username"`
+		Password string `json:"password" binding:"required" form:"password"`
+	}
+
+	if err := context.Bind(&registerInput); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
 
 	users := []types.User{}
 
-	fmt.Printf("Querying for existing user with email %s\n", email)
+	fmt.Printf("Querying for existing user with email %s\n", registerInput.Email)
 
-	result, err := db.Db.Query(`SELECT id from user WHERE username=? OR email=?`, username, email)
+	result, err := db.Db.Query(`SELECT id from user WHERE username=? OR email=?`, registerInput.Username, registerInput.Email)
 
 	if err != nil {
 		log.Fatal("Error while searching for existing users", err.Error())
@@ -42,19 +49,19 @@ func Register(context *gin.Context) {
 	}
 
 	if len(users) != 0 {
-		fmt.Printf("User with email: %s or username: %s already exists\n", email, username)
+		fmt.Printf("User with email: %s or username: %s already exists\n", registerInput.Email, registerInput.Username)
 
 		context.JSON(http.StatusConflict, gin.H{"message": "Email/username already exists"})
 		return
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerInput.Password), bcrypt.DefaultCost)
 
 	if err != nil {
 		log.Fatal("Error while hashing password", err.Error())
 	}
 
-	createdUserResult, err := db.Db.Exec(`INSERT INTO user(username, email, hashed_password, created_at) values(?,?,?,?)`, username, email, hashedPassword, time.Now())
+	createdUserResult, err := db.Db.Exec(`INSERT INTO user(username, email, hashed_password, created_at) values(?,?,?,?)`, registerInput.Username, registerInput.Email, hashedPassword, time.Now())
 
 	if err != nil {
 		log.Fatal("Error while registering a user", err.Error())

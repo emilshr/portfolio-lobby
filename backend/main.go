@@ -34,11 +34,14 @@ func main() {
 	router.POST("/get-reset-password", routes.GetResetPasswordLink)
 	router.POST("/reset-password/:token", routes.ResetPassword)
 	router.GET("/messages", routes.ListMessages)
+	router.GET("/comments", routes.ListComments)
 
 	// Protected routes
 	router.Use(middleware.ProtectedRoute())
 	router.POST("/messages", routes.SendMessage)
 	router.POST("/logout", routes.Logout)
+	router.POST("/comments", routes.AddComment)
+	router.DELETE("/comments/:id", routes.DeleteComment)
 
 	router.Run("0.0.0.0:8080")
 }

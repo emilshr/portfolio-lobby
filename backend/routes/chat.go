@@ -8,14 +8,22 @@ import (
 )
 
 func SendMessage(context *gin.Context) {
-	message := context.Request.FormValue("message")
+	var sendMessageInput struct {
+		Message string `json:"message" binding:"required" form:"message"`
+	}
+
+	if err := context.Bind(&sendMessageInput); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
 	tokenClaims, err := getUserAttributesFromContext(context)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	isSent, err := service.SendMessage(message, tokenClaims.userId)
+	isSent, err := service.SendMessage(sendMessageInput.Message, tokenClaims.userId)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})

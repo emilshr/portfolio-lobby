@@ -18,7 +18,7 @@ func SendMessage(message string, userId int8) (bool, error) {
 
 type PaginatedResponse struct {
 	Page           int                `json:"page"`
-	HasMoreRecords bool               `json:"hasMoreRecords"`
+	HasMoreRecords bool               `json:"has_more_records"`
 	Data           []MessagesResponse `json:"data"`
 }
 
@@ -26,7 +26,7 @@ type MessagesResponse struct {
 	Id       int8   `json:"id"`
 	Message  string `json:"message"`
 	Username string `json:"username"`
-	SentAt   string `json:"sentAt"`
+	SentAt   string `json:"sent_at"`
 }
 
 func ListMessages(page int) (*PaginatedResponse, error) {

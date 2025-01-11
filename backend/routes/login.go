@@ -8,10 +8,17 @@ import (
 )
 
 func Login(context *gin.Context) {
-	email := context.Request.FormValue("email")
-	password := context.Request.FormValue("password")
+	var loginInput struct {
+		Email    string `json:"email" binding:"required" form:"email"`
+		Password string `json:"password" binding:"required" form:"password"`
+	}
 
-	result, err := service.Login(email, password)
+	if err := context.Bind(&loginInput); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	result, err := service.Login(loginInput.Email, loginInput.Password)
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return

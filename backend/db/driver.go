@@ -1,6 +1,8 @@
 package db
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"database/sql"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
@@ -15,12 +17,33 @@ var Db *sql.DB
 func GetDatabaseConfig() string {
 	address := strings.Join([]string{constants.MYSQL_HOST, constants.MYSQL_PORT}, ":")
 
+	rootCertPool := x509.NewCertPool()
+	tlsOpt := "skip-verify"
+
+	if constants.ENV != "local" {
+		globalPerm, err := os.ReadFile("./certs/db.pem")
+		if err != nil {
+			log.Fatal("No public DB certificates found")
+			panic(1)
+		}
+		if ok := rootCertPool.AppendCertsFromPEM(globalPerm); !ok {
+			log.Fatal("Unable to append DB public certificate")
+			panic(1)
+		}
+		mysql.RegisterTLSConfig("custom", &tls.Config{
+			RootCAs: rootCertPool,
+		})
+		tlsOpt = "custom"
+	}
+
 	config := mysql.Config{
-		User:   constants.MYSQL_USER,
-		DBName: constants.MYSQL_DATABASE,
-		Passwd: constants.MYSQL_PASSWORD,
-		Net:    "tcp",
-		Addr:   address,
+		User:      constants.MYSQL_USER,
+		DBName:    constants.MYSQL_DATABASE,
+		Passwd:    constants.MYSQL_PASSWORD,
+		Net:       "tcp",
+		Addr:      address,
+		TLSConfig: tlsOpt,
+		ParseTime: true,
 	}
 
 	return config.FormatDSN()

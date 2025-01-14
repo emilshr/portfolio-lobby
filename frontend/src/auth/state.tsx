@@ -45,6 +45,7 @@ export const initialAuthState: AuthState = {
   isLoggedIn: false,
   loading: true,
   token: localStorage.getItem("token") ?? undefined,
+  tokenState: (localStorage.getItem("tokenState") as TokenState) ?? undefined,
 };
 
 // Context
@@ -61,11 +62,16 @@ export const AuthContext = createContext<AuthContextType>({
 
 // Reducer
 
+export enum TokenState {
+  NOT_LOGGED_IN = "user_not_logged_in",
+}
+
 export type AuthState = {
   token?: string;
   username?: string;
   isLoggedIn: boolean;
   loading: boolean;
+  tokenState?: TokenState;
 };
 
 export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
@@ -74,22 +80,26 @@ export const authReducer: Reducer<AuthState, AuthActions> = (state, action) => {
     case AuthActionType.LOGGED_IN: {
       const { token, username } = action.payload;
       localStorage.setItem("token", token);
+      localStorage.removeItem("tokenState");
       return {
         ...state,
         isLoggedIn: true,
         token,
         username,
         loading: false,
+        tokenState: undefined,
       };
     }
     case AuthActionType.LOGIN_FAILED:
     case AuthActionType.LOGGED_OUT: {
       localStorage.removeItem("token");
+      localStorage.setItem("tokenState", TokenState.NOT_LOGGED_IN);
       return {
         ...state,
         isLoggedIn: false,
         token: undefined,
         username: undefined,
+        tokenState: TokenState.NOT_LOGGED_IN,
       };
     }
 

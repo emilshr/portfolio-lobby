@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"portfolio/lobby/db"
 	middleware "portfolio/lobby/middlewares"
 	"portfolio/lobby/routes"
@@ -24,6 +25,11 @@ func main() {
 	config.AddExposeHeaders("Set-Cookie")
 
 	router.Use(cors.New(config))
+
+	// health-check route
+	router.GET("/health-check", func(ctx *gin.Context) {
+		ctx.Status(http.StatusOK)
+	})
 
 	// Public routes
 	router.GET("/whoami", routes.Me)

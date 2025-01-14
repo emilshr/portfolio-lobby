@@ -11,7 +11,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 
-export const apiClient = <ResponseBody = void, RequestBody = void>(
+export const apiClient = <ResponseBody = undefined, RequestBody = undefined>(
   method: Method,
   path: string,
   config?: AxiosRequestConfig<RequestBody>
@@ -47,18 +47,12 @@ export const useValidateToken = () => {
 
       const parsedExpiry = new Date(exp * 1000);
 
-      console.log(
-        { decodedToken, parsedExpiry },
-        parsedExpiry.toLocaleDateString()
-      );
-
       if (parsedExpiry < new Date()) {
         try {
           dispatch({ type: AuthActionType.START_LOADING });
           const {
             data: { token, username },
           } = await apiClient<RefreshTokenResponse>("GET", "refresh");
-          localStorage.setItem("token", token);
           dispatch({
             type: AuthActionType.LOGGED_IN,
             payload: { token, username },
@@ -66,7 +60,6 @@ export const useValidateToken = () => {
           axios.defaults.headers["Authorization"] = token;
         } catch (error) {
           console.error(`Error while requesting for refresh token`, error);
-          localStorage.removeItem("token");
           dispatch({ type: AuthActionType.LOGGED_OUT });
         } finally {
           dispatch({ type: AuthActionType.FINISHED_LOADING });

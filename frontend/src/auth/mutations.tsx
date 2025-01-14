@@ -11,7 +11,7 @@ type LoginMutationResponse = {
   username: string;
 };
 
-type LoginMutationPayload = {
+export type LoginMutationPayload = {
   email: string;
   password: string;
 };
@@ -38,7 +38,7 @@ export const useLoginMutation = () => {
   });
 };
 
-type RegisterMutationPayload = {
+export type RegisterMutationPayload = {
   email: string;
   password: string;
   username: string;

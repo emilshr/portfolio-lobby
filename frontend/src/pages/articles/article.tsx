@@ -79,6 +79,7 @@ export const Article = () => {
             return (
               <a
                 className="dark:text-blue-400 underline decoration-dotted dark:hover:text-blue-600 text-blue-600 hover:text-blue-400"
+                target="_blank"
                 {...props}
               />
             );

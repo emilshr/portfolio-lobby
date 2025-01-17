@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router";
+import { SquareTerminal } from "lucide-react";
+import { NavLink, useNavigate } from "react-router";
 import { ToggleTheme } from "./toggle-theme";
 
 export const Navbar = () => {
@@ -6,15 +7,27 @@ export const Navbar = () => {
   return (
     <nav className="flex justify-between w-full md:max-w-[80ch] pt-5 sm:pt-16">
       <p
-        className="text-2xl cursor-pointer"
+        className="flex gap-x-2 items-center text-2xl cursor-pointer"
         onClick={(event) => {
           event.stopPropagation();
           navigate("/");
         }}
       >
         Emil
+        <SquareTerminal size="20" />
       </p>
-      <ToggleTheme />
+      <span className="flex gap-x-2 items-center">
+        <GuestLobby />
+        <ToggleTheme />
+      </span>
     </nav>
+  );
+};
+
+const GuestLobby = () => {
+  return (
+    <NavLink to="/lobby" className="hover:underline">
+      Guestbook
+    </NavLink>
   );
 };

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -7,39 +6,33 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { CalendarIcon } from "lucide-react";
 import {
-  SiFacebook,
   SiGithub,
   SiLinkedin,
   SiGmail,
   SiX,
 } from "@icons-pack/react-simple-icons";
 import { Articles } from "./articles";
-import { NavLink } from "react-router";
+import { Work } from "./work";
 
-const GuestLobby = () => {
+const About = () => {
   return (
-    <div className="block">
-      <NavLink
-        className="inline-block pr-1 text-blue-400 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-400"
-        to="/lobby"
-      >
-        Click here
-      </NavLink>
-      <p className="inline-block">to visit the guest lobby</p>
+    <div className="grid grid-cols-1 md:grid-cols-4">
+      <div className="font-medium text-lg">About</div>
+      <div className="block col-span-3">
+        I specialize in building things for the web. I'm currently working as a
+        Full stack developer at
+        <SigtechHoverCard />
+        working on refining their product in the fintech domain.
+      </div>
     </div>
   );
 };
 
 export const Home = () => {
   return (
-    <div className="flex flex-col gap-y-6">
-      <div className="block">
-        I specialize in building things for the web. I'm currently working as a
-        Full stack developer at
-        <SigtechHoverCard />
-        working on refining their product in the fintech domain.
-      </div>
-      <GuestLobby />
+    <div className="flex flex-col gap-y-8 mb-4">
+      <About />
+      <Work />
       <Articles />
       <SocialLinks />
     </div>
@@ -48,24 +41,41 @@ export const Home = () => {
 
 const SocialLinks = () => {
   return (
-    <div className="flex gap-x-2 items-center">
-      <h2>Social links:</h2>
-      <div className="flex gap-x-2">
-        <Button variant="ghost" size="icon">
-          <SiFacebook color="default" />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <SiGithub />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <SiLinkedin color="default" />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <SiX />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <SiGmail color="default" />
-        </Button>
+    <div className="grid grid-cols-1 md:grid-cols-4">
+      <h2 className="font-medium text-lg">Links</h2>
+      <div className="flex flex-col gap-y-2 col-span-3">
+        <a href="https://github.com/emilshr" target="_blank" className="group">
+          <span className="flex justify-between items-center">
+            <p className="group-hover:underline">@emilshr</p>
+            <SiGithub size="14" />
+          </span>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/emilsharier/"
+          target="_blank"
+          className="group"
+        >
+          <span className="flex justify-between items-center">
+            <p className="group-hover:underline">@emilsharier</p>
+            <SiLinkedin size="14" />
+          </span>
+        </a>
+        <a href="https://x.com/EmilSharier" target="_blank" className="group">
+          <span className="flex justify-between items-center">
+            <p className="group-hover:underline">@emilsharier</p>
+            <SiX size="14" />
+          </span>
+        </a>
+        <a
+          href="mailto:emil.sharier.dev@gmail.com"
+          target="_blank"
+          className="group"
+        >
+          <span className="flex justify-between items-center">
+            <p className="group-hover:underline">@emil.sharier.dev</p>
+            <SiGmail size="14" />
+          </span>
+        </a>
       </div>
     </div>
   );

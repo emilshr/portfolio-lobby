@@ -3,9 +3,9 @@ import { NavLink } from "react-router";
 
 export const Articles = () => {
   return (
-    <div className="flex flex-col gap-y-3">
-      <p className="text-lg">Articles</p>
-      <ul className="space-y-1">
+    <div className="grid grid-cols-1 md:grid-cols-4">
+      <p className="font-medium text-lg">Articles</p>
+      <ul className="col-span-3">
         {BLOGS.map(({ title, slug }) => (
           <li key={slug}>
             <NavLink

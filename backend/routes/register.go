@@ -82,12 +82,12 @@ func Register(context *gin.Context) {
 		log.Fatal("Error while inserting confirmation token for user ", createdUserId)
 	}
 
-	confirmationUrl := constants.BACKEND_HOST + "/" + "/confirm/" + generatedConfirmationToken
+	confirmationUrl := constants.BACKEND_HOST + "/" + "confirm/" + generatedConfirmationToken
 
 	emailPayload := service.SendEmailPayload{
 		To:      []string{registerInput.Email},
 		Subject: "Account confirmation link",
-		Html:    "<span><h1>Click on the below link to confirm your account</h1><br /><a href=\"" + confirmationUrl + "\">Confirmation link</a><br/>" + confirmationUrl + "</span>",
+		Html:    "<span><h2>Click on the below link to confirm your account</h2><br /><a href=\"" + confirmationUrl + "\">Confirmation link</a><br/><p>Alternatively, you can copy paste the following link in your browser to verify your account " + confirmationUrl + "</p></span>",
 		Text:    "To verify your account. Click on the following link or copy paste it in your browser",
 	}
 

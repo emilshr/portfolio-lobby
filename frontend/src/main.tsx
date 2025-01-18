@@ -26,7 +26,7 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <ThemeProvider defaultTheme="dark" storageKey="site-theme">
             <Toaster />
-            <div className="text-sm leading-7 flex flex-col gap-y-8 min-h-svh w-svw items-center px-4 sm:px-0 md:px-0 dark:selection:bg-yellow-700 selection:bg-gray-300 relative">
+            <div className="text-sm leading-7 flex flex-col gap-y-8 min-h-svh w-full items-center px-4 sm:px-0 md:px-0 dark:selection:bg-yellow-700 selection:bg-gray-300 relative">
               <Navbar />
               <div className="md:max-w-[80ch] w-full flex flex-col h-full mb-5">
                 <RoutesWrapper />

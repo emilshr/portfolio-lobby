@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"portfolio/lobby/constants"
 	"portfolio/lobby/db"
 	middleware "portfolio/lobby/middlewares"
 	"portfolio/lobby/routes"
@@ -19,8 +20,11 @@ func main() {
 
 	config := cors.DefaultConfig()
 	config.AllowCredentials = true
-	config.AllowHeaders = []string{"Authorization", "Origin"}
-	config.AllowOrigins = []string{"http://localhost:5173", "http://localhost"}
+	if constants.ENV == "local" {
+		config.AllowOrigins = []string{"http://localhost:5173", "http://localhost"}
+	} else {
+		config.AllowOrigins = []string{"https://emilshr.com", "https://www.emilshr.com"}
+	}
 	config.AddAllowHeaders("Authorization", "Origin", "Content-Type", "Set-Cookie", "Credentials", "Content-Length", "Access-Control-Allow-Credentials")
 	config.AddExposeHeaders("Set-Cookie")
 
@@ -28,7 +32,7 @@ func main() {
 
 	// health-check route
 	router.GET("/health-check", func(ctx *gin.Context) {
-		ctx.Status(http.StatusOK)
+		ctx.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
 
 	// Public routes

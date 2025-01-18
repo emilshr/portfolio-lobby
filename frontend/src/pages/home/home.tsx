@@ -35,6 +35,7 @@ export const Home = () => {
       <Work />
       <Articles />
       <SocialLinks />
+      <hr />
       <Pictures />
     </div>
   );

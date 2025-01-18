@@ -37,8 +37,6 @@ go.work.sum
 # env file
 .env*
 
-certs
-
 # temp binary
 .DS_Store
 

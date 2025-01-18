@@ -47,45 +47,66 @@ const EXPERIENCE: WorkConfig[] = [
   },
 ];
 
+// const JobAlert = () => {
+//   return (
+//     <Alert>
+//       <InfoIcon className="h-4 w-4" />
+//       <AlertTitle>Open for hire</AlertTitle>
+//       <AlertDescription>
+//         I am open for full-time & contractual work
+//       </AlertDescription>
+//     </Alert>
+//   );
+// };
+
 export const Work = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4">
       <p className="font-medium text-lg">Work</p>
-      <ul className="space-y-4 col-span-3">
-        {EXPERIENCE.map(
-          ({ title, company, companyUrl, startedAt, endedAt, description }) => (
-            <div className="flex flex-col gap-y-1" key={company}>
-              <div>
-                <div className="flex gap-x-2 items-center">
-                  <div className="text-sm font-bold">{title}</div>
-                  <p>-</p>
-                  <a
-                    href={companyUrl}
-                    target="_blank"
-                    className="flex gap-x-1 items-center hover:underline decoration-dotted dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-800 pr-2"
-                  >
-                    <span>{company}</span>
-                    <ExternalLinkIcon size="15" className="text-muted" />
-                  </a>
+      <div className="col-span-3">
+        <ul className="space-y-4">
+          {EXPERIENCE.map(
+            ({
+              title,
+              company,
+              companyUrl,
+              startedAt,
+              endedAt,
+              description,
+            }) => (
+              <div className="flex flex-col gap-y-1" key={company}>
+                <div>
+                  <div className="flex gap-x-2 items-center">
+                    <div className="text-sm font-bold">{title}</div>
+                    <p>-</p>
+                    <a
+                      href={companyUrl}
+                      target="_blank"
+                      className="flex gap-x-1 items-center hover:underline decoration-dotted dark:text-gray-300 dark:hover:text-gray-200 text-gray-500 hover:text-gray-800 pr-2"
+                    >
+                      <span>{company}</span>
+                      <ExternalLinkIcon size="15" className="text-muted" />
+                    </a>
+                  </div>
+                  <p className="flex items-center text-xs text-muted-foreground">
+                    {`${startedAt.toLocaleString("default", {
+                      month: "short",
+                    })} ${startedAt.getFullYear()} `}
+                    {endedAt
+                      ? `- ${endedAt.toLocaleString("default", {
+                          month: "short",
+                        })} ${endedAt.getFullYear()}`
+                      : " - Present"}
+                  </p>
                 </div>
-                <p className="flex items-center text-xs text-muted-foreground">
-                  {`${startedAt.toLocaleString("default", {
-                    month: "short",
-                  })} ${startedAt.getFullYear()} `}
-                  {endedAt
-                    ? `- ${endedAt.toLocaleString("default", {
-                        month: "short",
-                      })} ${endedAt.getFullYear()}`
-                    : " - Present"}
-                </p>
+                <span className="dark:text-slate-400 text-slate-600 leading-relaxed">
+                  {description}
+                </span>
               </div>
-              <span className="dark:text-slate-400 text-slate-600 leading-relaxed">
-                {description}
-              </span>
-            </div>
-          )
-        )}
-      </ul>
+            )
+          )}
+        </ul>
+      </div>
     </div>
   );
 };

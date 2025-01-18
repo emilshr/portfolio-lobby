@@ -4,7 +4,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, MapPin } from "lucide-react";
 import {
   SiGithub,
   SiLinkedin,
@@ -19,8 +19,8 @@ const About = () => {
     <div className="grid grid-cols-1 md:grid-cols-4">
       <div className="font-medium text-lg">About</div>
       <div className="block col-span-3">
-        I specialize in building things for the web. I'm currently working as a
-        Full stack developer at
+        A passionate motorcyclist & a web developer. I specialize in building
+        things for the web. I'm currently working as a Full stack developer at
         <SigtechHoverCard />
         working on refining their product in the fintech domain.
       </div>
@@ -35,6 +35,7 @@ export const Home = () => {
       <Work />
       <Articles />
       <SocialLinks />
+      <Pictures />
     </div>
   );
 };
@@ -115,5 +116,40 @@ const SigtechHoverCard = () => {
         </div>
       </HoverCardContent>
     </HoverCard>
+  );
+};
+
+const Pictures = () => {
+  return (
+    <div className="grid grid-cols-5 md:h-[400px] h-[200px] gap-4 overflow-hidden">
+      <div className="relative h-full w-full col-span-2 rounded-md object-cover group">
+        <img
+          src="/assets/me.png"
+          alt="Image"
+          className="z-10 absolute h-full w-full object-cover rounded-md"
+          loading="lazy"
+        />
+        <div className="z-20 absolute transform duration-500 -bottom-10 left-2 group-hover:bottom-2">
+          <span className="flex gap-x-2 rounded-sm bg-black-glass-60 px-2 py-1 text-muted-foreground text-xs">
+            <MapPin size="14" />
+            <p>Atop Illikkal Kallu, Kottayam</p>
+          </span>
+        </div>
+      </div>
+      <div className="relative h-full w-full col-span-3 rounded-md object-cover group">
+        <img
+          src="/assets/uluppunni.png"
+          alt="Image"
+          className="h-full w-full col-span-3 rounded-md object-cover"
+          loading="lazy"
+        />
+        <div className="z-20 absolute transform duration-500 -bottom-20 left-2 group-hover:bottom-2">
+          <span className="flex gap-x-2 rounded-sm bg-black-glass-60 px-2 py-1 text-muted-foreground text-xs">
+            <MapPin size="14" />
+            <p>Divine sunset at Uluppunni, Kottayam</p>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };

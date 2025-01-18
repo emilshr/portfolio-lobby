@@ -29,7 +29,7 @@ func ConfirmAccount(context *gin.Context) {
 		}
 
 		service.ConfirmUser(claims.UserId)
-		context.JSON(http.StatusOK, gin.H{"message": "Your account is verified"})
+		context.JSON(http.StatusOK, gin.H{"message": "Your account is verified. Close this tab and login with your credentials now"})
 	} else {
 		context.JSON(http.StatusUnauthorized, gin.H{"message": "Your account is not verified"})
 	}

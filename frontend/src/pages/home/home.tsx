@@ -13,6 +13,8 @@ import {
 } from "@icons-pack/react-simple-icons";
 import { Articles } from "./articles";
 import { Work } from "./work";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 const About = () => {
   return (
@@ -124,11 +126,13 @@ const Pictures = () => {
   return (
     <div className="grid grid-cols-5 md:h-[400px] h-[200px] gap-4 overflow-hidden">
       <div className="relative h-full w-full col-span-2 rounded-md object-cover group">
-        <img
+        <LazyLoadImage
           src="/assets/me.png"
-          alt="Image"
-          className="z-10 absolute h-full w-full object-cover rounded-md"
+          alt="Atop Illikkal Kallu, Kottayam"
+          className="z-10 h-full w-full object-cover rounded-md"
+          wrapperClassName="z-10 h-full w-full object-cover rounded-md"
           loading="lazy"
+          effect="blur"
         />
         <div className="z-20 absolute transform duration-500 -bottom-10 left-2 group-hover:bottom-2">
           <span className="flex gap-x-2 rounded-sm bg-black-glass-60 px-2 py-1 text-muted-foreground text-xs">
@@ -138,11 +142,13 @@ const Pictures = () => {
         </div>
       </div>
       <div className="relative h-full w-full col-span-3 rounded-md object-cover group">
-        <img
+        <LazyLoadImage
           src="/assets/uluppunni.png"
-          alt="Image"
-          className="h-full w-full col-span-3 rounded-md object-cover"
+          alt="Divine sunset at Uluppunni, Kottayam"
+          className="z-10 h-full w-full col-span-3 rounded-md"
+          wrapperClassName="z-10 h-full w-full col-span-3 rounded-md"
           loading="lazy"
+          effect="blur"
         />
         <div className="z-20 absolute transform duration-500 -bottom-20 left-2 group-hover:bottom-2">
           <span className="flex gap-x-2 rounded-sm bg-black-glass-60 px-2 py-1 text-muted-foreground text-xs">

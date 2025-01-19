@@ -10,6 +10,8 @@ import { useTheme } from "@/components/theme-provider";
 import remarkGfm from "remark-gfm";
 import { Comments } from "./comments";
 import { useAuthRefresher } from "@/auth/auth-refresher";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 export const Article = () => {
   useAuthRefresher();
@@ -112,6 +114,16 @@ export const Article = () => {
           },
           ul(props) {
             return <ul className="pl-4 list-disc space-y-1" {...props} />;
+          },
+          img(props) {
+            return (
+              <LazyLoadImage
+                effect="blur"
+                loading="lazy"
+                wrapperClassName={props.className}
+                {...props}
+              />
+            );
           },
         }}
       >

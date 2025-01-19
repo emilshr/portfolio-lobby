@@ -2,6 +2,8 @@ package routes
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"portfolio/lobby/constants"
@@ -9,9 +11,6 @@ import (
 	service "portfolio/lobby/services"
 	"portfolio/lobby/types"
 	"time"
-
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(context *gin.Context) {

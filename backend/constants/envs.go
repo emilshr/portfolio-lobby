@@ -29,3 +29,11 @@ var BACKEND_HOST = os.Getenv("BACKEND_HOST")
 var SCHEME = os.Getenv("SCHEME")
 
 var REFRESH_TOKEN_COOKIE = os.Getenv("REFRESH_TOKEN_COOKIE")
+
+// Redis stuff
+var REDIS_HOST = os.Getenv("REDIS_HOST")
+var REDIS_PORT = os.Getenv("REDIS_PORT")
+var REDIS_PASSWORD = os.Getenv("REDIS_PASSWORD")
+var REDIS_DB = os.Getenv("REDIS_DB")
+var REDIS_USER = os.Getenv("REDIS_USER")
+var REDIS_TLS_DOMAIN = os.Getenv("REDIS_TLS_DOMAIN")

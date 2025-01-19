@@ -1,27 +1,20 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"github.com/gin-contrib/cors"
 	"portfolio/lobby/constants"
 )
 
-func CorsMiddleware() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		if constants.ENV == "local" {
-			context.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		} else {
-			context.Writer.Header().Set("Access-Control-Allow-Origin", "https://emilshr.com")
-		}
-		context.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		context.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		context.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, PATCH")
-
-		if context.Request.Method == "OPTIONS" {
-			context.AbortWithStatus(http.StatusNoContent)
-			return
-		}
-
-		context.Next()
+func CorsMiddleware() cors.Config {
+	config := cors.DefaultConfig()
+	config.AllowCredentials = true
+	if constants.ENV == "local" {
+		config.AllowOrigins = []string{"http://localhost:5173", "http://localhost"}
+	} else {
+		config.AllowOrigins = []string{"https://emilshr.com", "https://www.emilshr.com"}
 	}
+	config.AddAllowHeaders("Authorization", "Origin", "Content-Type", "Set-Cookie", "Credentials", "Content-Length", "Access-Control-Allow-Credentials")
+	config.AddExposeHeaders("Set-Cookie")
+
+	return config
 }

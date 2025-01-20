@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async";
+import { Helmet } from "react-helmet";
 
 type Props = {
   title: string;
@@ -8,7 +8,7 @@ type Props = {
 
 export const Seo = ({ description, title, keywords }: Props) => {
   return (
-    <Helmet prioritizeSeoTags>
+    <Helmet>
       <title>{title || "Emil"}</title>
       <meta name="title" property="og:title" content={title || "Emil"} />
       <meta name="type" property="og:type" content="website" />

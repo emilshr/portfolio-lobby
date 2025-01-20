@@ -14,7 +14,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { Loader2 } from "lucide-react";
 import { BLOGS } from "@/blog/config";
-import { Helmet } from "react-helmet";
+import { Seo } from "@/components/Seo";
 
 export const Article = () => {
   useAuthRefresher();
@@ -53,31 +53,11 @@ export const Article = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{foundBlog?.title || "Emil | Article"}</title>
-        <meta
-          name="title"
-          property="og:title"
-          content={foundBlog?.title || "Emil | Article"}
-        />
-        <meta name="type" property="og:type" content="website" />
-        <meta
-          name="description"
-          property="og:description"
-          content={foundBlog?.description || undefined}
-        />
-        <meta
-          name="image"
-          property="og:image"
-          content="https://www.emilshr.com/assets/uluppunni.png"
-        />
-        <meta name="author" property="og:author" content="Emil Sharier" />
-        <meta
-          name="keywords"
-          property="og:keywords"
-          content={foundBlog?.keywords?.join(",") || undefined}
-        />
-      </Helmet>
+      <Seo
+        description={foundBlog?.description || ""}
+        title={foundBlog?.title || "Article"}
+        keywords={foundBlog?.keywords}
+      />
       <div className="flex flex-col gap-y-8 pb-4">
         <Markdown
           remarkPlugins={[remarkGfm]}

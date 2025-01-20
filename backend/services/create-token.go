@@ -64,7 +64,7 @@ func CreatePasswordResetToken(email string) (*string, error) {
 	fetchedUser, err := GetUserByEmail(email)
 
 	if err != nil {
-		return nil, fmt.Errorf("error while getting user %s", err.Error())
+		return nil, err
 	}
 
 	_, err = db.Db.Exec(`INSERT INTO password_reset(user_id, token) VALUES(?,?)`, fetchedUser.Id, signedToken)

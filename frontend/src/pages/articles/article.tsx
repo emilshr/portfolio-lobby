@@ -12,6 +12,7 @@ import { Comments } from "./comments";
 import { useAuthRefresher } from "@/auth/auth-refresher";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { Loader2 } from "lucide-react";
 
 export const Article = () => {
   useAuthRefresher();
@@ -38,7 +39,12 @@ export const Article = () => {
   }, [navigate, slug]);
 
   if (loading) {
-    return <>loading</>;
+    return (
+      <div className="h-full flex items-center gap-x-2">
+        <p>Loading article</p>
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -68,13 +74,10 @@ export const Article = () => {
           },
           h3(props) {
             return (
-              <div className="flex flex-col gap-y-1 pb-4">
-                <p
-                  className="text-lg dark:text-slate-300 text-slate-600"
-                  {...props}
-                />
-                <hr />
-              </div>
+              <p
+                className="text-lg pb-2 dark:text-slate-300 text-slate-600 italic"
+                {...props}
+              />
             );
           },
           a(props) {

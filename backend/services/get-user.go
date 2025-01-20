@@ -34,7 +34,7 @@ func GetUserById(userId int8) (*types.User, error) {
 	if err != nil {
 		fmt.Printf("Error while getting user %s\n", err.Error())
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no user with id %s found", userId)
+			return nil, fmt.Errorf("no user with id %d found", userId)
 		}
 		return nil, err
 	}

@@ -70,8 +70,6 @@ export const Comments = () => {
 
   const [comments, setComments] = useState(commentsQuery);
 
-  console.log({ isLoading });
-
   return (
     <div className="flex flex-col gap-y-4">
       <span className="flex flex-col gap-y-2">
@@ -98,16 +96,22 @@ export const Comments = () => {
             <Loader2 className="animate-spin" />
           </span>
         )}
-        {comments.map(({ id, username, comment }) => {
-          return (
-            <span key={id}>
-              <div key={id} className="flex gap-x-2 items-start py-1">
-                <p className="dark:text-gray-400 text-gray-700">{username}: </p>
-                <p>{comment}</p>
-              </div>
-            </span>
-          );
-        })}
+        {comments.length === 0 ? (
+          <p>No comments yet</p>
+        ) : (
+          comments.map(({ id, username, comment }) => {
+            return (
+              <span key={id}>
+                <div key={id} className="flex gap-x-2 items-start py-1">
+                  <p className="dark:text-gray-400 text-gray-700">
+                    {username}:{" "}
+                  </p>
+                  <p>{comment}</p>
+                </div>
+              </span>
+            );
+          })
+        )}
       </div>
     </div>
   );

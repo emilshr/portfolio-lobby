@@ -63,13 +63,11 @@ export const Register = () => {
                     placeholder="Email"
                     type="email"
                     {...register("email", { required: true })}
-                    defaultValue="test@gmail.com"
                   />
                   <Input
                     placeholder="Your name"
                     type="text"
                     {...register("username", { required: true })}
-                    defaultValue="test"
                   />
                   <Input
                     placeholder="Password"

@@ -25,4 +25,11 @@ export const BLOGS: BlogConfig[] = [
     slug: "nestjs-is-interesting",
     publishedOn: new Date("2024-01-11T19:21:40.810Z"),
   },
-];
+  {
+    title: "I hosted this entire portfolio for free!",
+    slug: "i-hosted-this-blog-for-free",
+    publishedOn: new Date("2025-01-19T08:50:59.756Z"),
+  },
+].sort(
+  (blogA, blogB) => blogB.publishedOn.getTime() - blogA.publishedOn.getTime()
+);

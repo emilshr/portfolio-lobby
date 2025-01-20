@@ -63,7 +63,6 @@ export const Login = () => {
                         },
                         required: true,
                       })}
-                      defaultValue="test@gmail.com"
                       placeholder="Email"
                       type="email"
                       error={!!errors.email}
@@ -77,7 +76,6 @@ export const Login = () => {
                           message: "Password is too short",
                         },
                       })}
-                      defaultValue="pass"
                       placeholder="Password"
                       type="password"
                       error={!!errors.password}

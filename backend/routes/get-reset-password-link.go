@@ -7,12 +7,19 @@ import (
 )
 
 func GetResetPasswordLink(context *gin.Context) {
-	email := context.Request.FormValue("email")
+	var passwordResetInput struct {
+		Email string `json:"email" binding:"required" form:"email"`
+	}
 
-	signedToken, err := service.CreatePasswordResetToken(email)
+	if err := context.Bind(&passwordResetInput); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	signedToken, err := service.CreatePasswordResetToken(passwordResetInput.Email)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Error while generating reset password link"})
+		context.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	} else {
 		context.JSON(http.StatusOK, gin.H{"data": signedToken})
 	}

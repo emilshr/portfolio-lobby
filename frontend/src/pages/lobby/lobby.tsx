@@ -208,7 +208,6 @@ const Chat = () => {
             sent_at: new Date(),
             username,
           });
-          console.log({ updatedMessages, messages });
           setMessages(updatedMessages);
         }}
       />

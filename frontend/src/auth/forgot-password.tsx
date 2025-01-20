@@ -13,6 +13,7 @@ import { useGetResetPassword } from "./mutations";
 import { useToast } from "@/hooks/use-toast";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { EMAIL_REGEX } from "@/lib/constants";
+import { AxiosError } from "axios";
 
 export const ForgotPassword = () => {
   const [open, setOpen] = useState(false);
@@ -36,10 +37,12 @@ export const ForgotPassword = () => {
           description: "Reset password instructions sent to your inbox",
         });
       })
-      .catch(() => {
+      .catch((reason) => {
         toast({
           title: "Uh oh",
           description:
+            (reason as AxiosError<{ message: string }>).response?.data
+              ?.message ??
             "An error occurred while generating the reset password link",
           variant: "destructive",
         });

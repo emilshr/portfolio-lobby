@@ -8,13 +8,9 @@ type Props = {
 
 export const Seo = ({ description, title, keywords }: Props) => {
   return (
-    <Helmet>
-      <title>{title || "Emil | Article"}</title>
-      <meta
-        name="title"
-        property="og:title"
-        content={title || "Emil | Article"}
-      />
+    <Helmet prioritizeSeoTags>
+      <title>{title || "Emil"}</title>
+      <meta name="title" property="og:title" content={title || "Emil"} />
       <meta name="type" property="og:type" content="website" />
       <meta
         name="description"

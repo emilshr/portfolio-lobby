@@ -60,6 +60,7 @@ export const Article = () => {
           property="og:title"
           content={foundBlog?.title || "Emil | Article"}
         />
+        <meta name="type" property="og:type" content="website" />
         <meta
           name="description"
           property="og:description"

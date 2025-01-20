@@ -96,7 +96,7 @@ export const Comments = () => {
             <Loader2 className="animate-spin" />
           </span>
         )}
-        {comments.length === 0 ? (
+        {!isLoading && comments.length === 0 ? (
           <p>No comments yet</p>
         ) : (
           comments.map(({ id, username, comment }) => {

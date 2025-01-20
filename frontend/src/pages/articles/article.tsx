@@ -56,12 +56,20 @@ export const Article = () => {
       <Helmet>
         <title>{foundBlog?.title || "Emil | Article"}</title>
         <meta
-          name="description"
+          property="og:title"
+          content={foundBlog?.title || "Emil | Article"}
+        />
+        <meta
+          property="og:description"
           content={foundBlog?.description || undefined}
         />
-        <meta name="author" content="Emil Sharier" />
         <meta
-          name="keywords"
+          property="og:image"
+          content="https://www.emilshr.com/assets/uluppunni.png"
+        />
+        <meta property="og:author" content="Emil Sharier" />
+        <meta
+          property="og:keywords"
           content={foundBlog?.keywords?.join(",") || undefined}
         />
       </Helmet>

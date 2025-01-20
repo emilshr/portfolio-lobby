@@ -24,7 +24,7 @@ const EXPERIENCE: WorkConfig[] = [
     title: "Software Engineer",
     startedAt: new Date("05/03/2021"),
     description:
-      "Helped develop MEAT (Most economically advantageous Tender), which is a framework that permits the user to understand the likelihood of winning a bid",
+      "Helped develop MEAT (Most Economically Advantageous Tender), which is a framework that permits the user to understand the likelihood of winning a bid",
     endedAt: new Date("05/20/2023"),
   },
   {

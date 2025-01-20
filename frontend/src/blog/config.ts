@@ -2,6 +2,8 @@ type BlogConfig = {
   title: string;
   slug: string;
   publishedOn: Date;
+  keywords?: string[];
+  description?: string;
 };
 
 export const BLOGS: BlogConfig[] = [
@@ -29,6 +31,8 @@ export const BLOGS: BlogConfig[] = [
     title: "I hosted this entire portfolio for free!",
     slug: "i-hosted-this-blog-for-free",
     publishedOn: new Date("2025-01-19T08:50:59.756Z"),
+    keywords: ["React.js", "GoLang", "Render", "Vercel", "Resend"],
+    description: "An article on how I managed to host this portfolio for free!",
   },
 ].sort(
   (blogA, blogB) => blogB.publishedOn.getTime() - blogA.publishedOn.getTime()

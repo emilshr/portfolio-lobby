@@ -19,6 +19,7 @@ import { QueryClientWrapper } from "./components/query-client-wrapper.tsx";
 import { AuthInit } from "./auth/auth-init.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import { Seo } from "./components/Seo.tsx";
+import { Footer } from "./components/Footer.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -35,6 +36,10 @@ createRoot(document.getElementById("root")!).render(
               <Navbar />
               <div className="md:max-w-[80ch] w-full flex flex-col h-full mb-5">
                 <RoutesWrapper />
+                <hr />
+                <span className="mt-6">
+                  <Footer />
+                </span>
               </div>
             </div>
           </ThemeProvider>

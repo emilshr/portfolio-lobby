@@ -10,7 +10,8 @@ import (
 )
 
 func ListComments(context *gin.Context) {
-	fetchedComments, err := service.FetchComments()
+	postSlug := context.Param("postSlug")
+	fetchedComments, err := service.FetchComments(postSlug)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch comments"})

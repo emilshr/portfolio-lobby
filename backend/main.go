@@ -44,7 +44,7 @@ func main() {
 	router.POST("/get-reset-password", routes.GetResetPasswordLink)
 	router.POST("/reset-password/:token", routes.ResetPassword)
 	router.GET("/messages", routes.ListMessages)
-	router.GET("/comments", routes.ListComments)
+	router.GET("/comments/:postSlug", routes.ListComments)
 
 	// Protected routes
 	router.Use(middleware.ProtectedRoute())

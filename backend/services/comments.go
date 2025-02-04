@@ -13,10 +13,10 @@ type CommentsResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-func FetchComments() (*[]CommentsResponse, error) {
+func FetchComments(postSlug string) (*[]CommentsResponse, error) {
 	var comments []CommentsResponse = make([]CommentsResponse, 0)
 
-	results, err := db.Db.Query(`SELECT comment.id, comment.comment, comment.created_at, user.username from comment LEFT JOIN user on comment.user_id=user.id ORDER BY comment.created_at DESC`)
+	results, err := db.Db.Query(`SELECT comment.id, comment.comment, comment.created_at, user.username from comment LEFT JOIN user on comment.user_id=user.id WHERE comment.post_slug=? ORDER BY comment.created_at DESC`, postSlug)
 
 	if err != nil {
 		fmt.Println("Error while querying for comments", err.Error())

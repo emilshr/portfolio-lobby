@@ -7,10 +7,14 @@ export type Comment = {
   created_at: Date;
 };
 
-export const useGetComments = () => {
+type GetCommentsRequest = {
+  slug: string;
+};
+
+export const useGetComments = ({ slug }: GetCommentsRequest) => {
   return useApiQuery<Comment[]>({
-    path: ["comments"],
-    queryKey: ["comments"],
+    path: ["comments", slug],
+    queryKey: ["comments", slug],
     refetchInterval: 10000,
   });
 };

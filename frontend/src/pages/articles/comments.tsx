@@ -60,13 +60,18 @@ const CommentInput = ({ onAddingComment }: CommentInputProps) => {
   );
 };
 
-export const Comments = () => {
+type CommentsProps = {
+  slug: string;
+};
+
+export const Comments = ({ slug }: CommentsProps) => {
   const {
     state: { isLoggedIn },
   } = useContext(AuthContext);
 
-  const { data: { data: commentsQuery = [] } = {}, isLoading } =
-    useGetComments();
+  const { data: { data: commentsQuery = [] } = {}, isLoading } = useGetComments(
+    { slug }
+  );
 
   const [comments, setComments] = useState(commentsQuery);
 

@@ -18,7 +18,7 @@ import { Seo } from "@/components/Seo";
 
 export const Article = () => {
   useAuthRefresher();
-  const { slug } = useParams<{ slug: string }>();
+  const { slug = "" } = useParams<{ slug: string }>();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
   const { theme } = useTheme();
@@ -142,7 +142,7 @@ export const Article = () => {
         >
           {content}
         </Markdown>
-        <Comments />
+        <Comments slug={slug} />
       </div>
     </>
   );

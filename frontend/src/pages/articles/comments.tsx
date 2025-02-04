@@ -1,6 +1,6 @@
 import { AuthForms } from "@/auth/auth-forms";
 import { AuthContext } from "@/auth/state";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Comment, useGetComments } from "./queries";
 import { Button } from "@/components/ui/button";
@@ -73,6 +73,10 @@ export const Comments = ({ slug }: CommentsProps) => {
     { slug }
   );
 
+  useEffect(() => {
+    setComments(commentsQuery);
+  }, [commentsQuery]);
+
   const [comments, setComments] = useState(commentsQuery);
 
   return (
@@ -94,7 +98,7 @@ export const Comments = ({ slug }: CommentsProps) => {
           <AuthForms />
         )}
       </div>
-      <div className="flex flex-col gap-y-4">
+      <div className="flex flex-col gap-y-1">
         {isLoading && (
           <span className="flex gap-x-2 items-center">
             <p>Loading comments</p>
@@ -107,7 +111,7 @@ export const Comments = ({ slug }: CommentsProps) => {
           comments.map(({ id, username, comment }) => {
             return (
               <span key={id}>
-                <div key={id} className="flex gap-x-2 items-start py-1">
+                <div key={id} className="flex gap-x-2 items-start">
                   <p className="dark:text-gray-400 text-gray-700">
                     {username}:{" "}
                   </p>

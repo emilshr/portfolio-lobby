@@ -12,9 +12,10 @@ type GetCommentsRequest = {
 };
 
 export const useGetComments = ({ slug }: GetCommentsRequest) => {
-  return useApiQuery<Comment[]>({
+  const response = useApiQuery<Comment[]>({
     path: ["comments", slug],
     queryKey: ["comments", slug],
-    refetchInterval: 10000,
+    refetchInterval: 5000,
   });
+  return response;
 };

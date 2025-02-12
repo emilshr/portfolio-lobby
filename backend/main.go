@@ -32,6 +32,10 @@ func main() {
 
 	// health-check route
 	router.GET("/health-check", func(ctx *gin.Context) {
+		if err := db.Db.Ping(); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"status": "DOWN", "message": "PING operation for the MSQL database failed"})
+			return
+		}
 		ctx.JSON(http.StatusOK, gin.H{"status": "OK"})
 	})
 
